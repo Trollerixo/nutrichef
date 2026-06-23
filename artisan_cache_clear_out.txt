@@ -1,0 +1,26 @@
+
+   INFO  Configuration cache cleared successfully.  
+
+
+   Illuminate\Database\QueryException 
+
+  SQLSTATE[42S02]: Base table or view not found: 1146 Table 'nutrichef.cache' doesn't exist (Connection: mysql, Host: 127.0.0.1, Port: 3306, Database: nutrichef, SQL: delete from `cache`)
+
+  at vendor\laravel\framework\src\Illuminate\Database\Connection.php:838
+    834â–•             $exceptionType = $this->isUniqueConstraintError($e)
+    835â–•                 ? UniqueConstraintViolationException::class
+    836â–•                 : QueryException::class;
+    837â–• 
+  âžœ 838â–•             throw new $exceptionType(
+    839â–•                 $this->getNameWithReadWriteType(),
+    840â–•                 $query,
+    841â–•                 $this->prepareBindings($bindings),
+    842â–•                 $e,
+
+  1   vendor\laravel\framework\src\Illuminate\Database\Connection.php:605
+      PDOException::("SQLSTATE[42S02]: Base table or view not found: 1146 Table 'nutrichef.cache' doesn't exist")
+
+  2   vendor\laravel\framework\src\Illuminate\Database\Connection.php:605
+      PDO::prepare("delete from `cache`")
+
+

@@ -1,0 +1,5 @@
+rc:0
+out:Composer version 2.9.8 2026-05-13 09:28:38
+
+err:PHP version 8.2.12 (C:\xampp\php\php.exe)
+Run the "diagnose" command to get more detailed diagnostics output.

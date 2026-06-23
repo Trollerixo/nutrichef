@@ -1,0 +1,300 @@
+@import "bootstrap/dist/css/bootstrap.min.css";
+@import "bootstrap-icons/font/bootstrap-icons.css";
+
+/* ─── NutriChef Design System ──────────────────────────────── */
+
+:root {
+    --nc-primary: #2d6a4f;
+    --nc-primary-light: #d8f3dc;
+    --nc-secondary: #40916c;
+    --nc-accent: #ff9f1c;
+    --nc-bg: #f8f9fa;
+    --nc-card-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    --nc-border-radius: 12px;
+}
+
+body {
+    background-color: var(--nc-bg);
+    font-family:
+        "Inter",
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        sans-serif;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* ─── UI Components ────────────────────────────────────────── */
+
+.card {
+    border: none;
+    border-radius: var(--nc-border-radius);
+    box-shadow: var(--nc-card-shadow);
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.btn-dark {
+    background-color: var(--nc-primary);
+    border-color: var(--nc-primary);
+    border-radius: 8px;
+    font-weight: 500;
+    padding: 0.6rem 1.2rem;
+}
+
+.btn-dark.btn-sm {
+    padding: 0.25rem 0.5rem;
+}
+
+.btn-dark.btn-lg {
+    padding: 0.5rem 1rem;
+}
+
+.btn-dark:hover {
+    background-color: var(--nc-secondary);
+    border-color: var(--nc-secondary);
+}
+
+.btn-outline-dark {
+    border-color: var(--nc-primary);
+    color: var(--nc-primary);
+    border-radius: 8px;
+}
+
+.btn-outline-dark:hover {
+    background-color: var(--nc-primary);
+    color: white;
+}
+
+/* ─── Navigation ───────────────────────────────────────────── */
+
+.nc-sidebar .nav-link {
+    color: #555;
+    border-radius: 8px;
+    padding: 0.7rem 1rem;
+    margin-bottom: 4px;
+    transition: all 0.2s ease;
+}
+
+.nc-sidebar .nav-link:hover,
+.nc-sidebar .nav-link.active {
+    background-color: var(--nc-primary-light);
+    color: var(--nc-primary);
+    font-weight: 600;
+}
+
+.nc-sidebar .nav-link i {
+    font-size: 1.1rem;
+}
+
+/* ─── Toasts & Alerts ──────────────────────────────────────── */
+
+.toast-container {
+    z-index: 1060;
+}
+
+.nc-toast {
+    border-radius: 10px;
+    border-left: 5px solid var(--nc-primary);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* ─── Utility ──────────────────────────────────────────────── */
+
+.nc-img-placeholder {
+    background: #e9ecef;
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+    font-size: 2.5rem;
+    border-top-left-radius: var(--nc-border-radius);
+    border-top-right-radius: var(--nc-border-radius);
+}
+
+.nc-badge {
+    background-color: var(--nc-primary-light);
+    color: var(--nc-primary);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.nc-rating {
+    color: var(--nc-accent);
+}
+
+/* ─── Animations ────────────────────────────────────────── */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.nc-fade-in {
+    animation: fadeIn 0.4s ease-out forwards;
+}
+
+.nc-card-hover {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nc-card-hover:hover {
+    transform: scale(1.02);
+}
+
+/* ─── Accessibility ────────────────────────────────────────── */
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+:focus-visible {
+    outline: 3px solid var(--nc-secondary);
+    outline-offset: 2px;
+}
+
+/* ─── Interactive States ───────────────────────────────────── */
+
+.btn-favorite.active i {
+    color: #e63946;
+    animation: heartBeat 0.3s ease-in-out;
+}
+
+@keyframes heartBeat {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.3);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.loading-spinner {
+    display: none;
+}
+
+.btn-loading .loading-spinner {
+    display: inline-block;
+}
+
+.btn-loading .btn-text {
+    display: none;
+}
+
+/* ─── Chat Interface ────────────────────────────────────────── */
+
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 64px);
+    margin: -1.5rem;
+    background: #fff;
+    overflow: hidden;
+}
+
+.chat-header {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: var(--nc-primary);
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    background: #e5ddd5;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.chat-message {
+    display: flex;
+    max-width: 80%;
+}
+
+.chat-message--mine {
+    align-self: flex-end;
+}
+
+.chat-message--theirs {
+    align-self: flex-start;
+}
+
+.chat-bubble {
+    padding: 0.5rem 0.75rem;
+    border-radius: 12px;
+    position: relative;
+    word-wrap: break-word;
+    font-size: 0.9rem;
+}
+
+.chat-message--mine .chat-bubble {
+    background: #d9fdd3;
+    border-bottom-right-radius: 4px;
+}
+
+.chat-message--theirs .chat-bubble {
+    background: #fff;
+    border-bottom-left-radius: 4px;
+}
+
+.chat-time {
+    display: block;
+    text-align: right;
+    font-size: 0.65rem;
+    color: #999;
+    margin-top: 2px;
+}
+
+.chat-input {
+    padding: 0.75rem 1rem;
+    background: #f0f0f0;
+    flex-shrink: 0;
+}
+
+.chat-input .form-control {
+    border-radius: 20px;
+    padding-left: 1rem;
+}
+
+.chat-input .btn-dark {
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

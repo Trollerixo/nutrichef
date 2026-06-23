@@ -1,0 +1,5 @@
+
+   INFO  Running migrations.  
+
+  2026_06_08_015434_create_cache_table ......................... 117.39ms DONE
+
