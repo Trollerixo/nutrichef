@@ -35,63 +35,70 @@
             </div>
         </div>
     </div>
+
+    @push('scripts')
+    <script>
+    (function () {
+        function initCharts() {
+            if (typeof Chart === 'undefined') {
+                setTimeout(initCharts, 100);
+                return;
+            }
+
+            const meses  = @json($usuariosPorMes->pluck('mes'));
+            const totals = @json($usuariosPorMes->pluck('total'));
+
+            new Chart(document.getElementById('chartUsuarios'), {
+                type: 'line',
+                data: {
+                    labels: meses,
+                    datasets: [{
+                        label: 'Nuevos usuarios',
+                        data: totals,
+                        borderColor: '#6c757d',
+                        backgroundColor: 'rgba(108,117,125,0.08)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        pointRadius: 4,
+                        fill: true,
+                    }],
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { precision: 0 } },
+                    },
+                },
+            });
+
+            const recetaLabels = @json($recetasMasVistas->pluck('title'));
+            const recetaCounts = @json($recetasMasVistas->pluck('rating_count'));
+
+            new Chart(document.getElementById('chartRecetas'), {
+                type: 'bar',
+                data: {
+                    labels: recetaLabels,
+                    datasets: [{
+                        label: 'Reseñas',
+                        data: recetaCounts,
+                        backgroundColor: 'rgba(108,117,125,0.5)',
+                        borderColor: '#6c757d',
+                        borderWidth: 1,
+                    }],
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { precision: 0 } },
+                    },
+                },
+            });
+        }
+
+        initCharts();
+    })();
+    </script>
+    @endpush
 </x-app-layout>
-
-@push('scripts')
-<script>
-(function () {
-    // ── Usuarios por mes ───────────────────────────────────────────
-    const meses  = @json($usuariosPorMes->pluck('mes'));
-    const totals = @json($usuariosPorMes->pluck('total'));
-
-    new Chart(document.getElementById('chartUsuarios'), {
-        type: 'line',
-        data: {
-            labels: meses,
-            datasets: [{
-                label: 'Nuevos usuarios',
-                data: totals,
-                borderColor: '#6c757d',
-                backgroundColor: 'rgba(108,117,125,0.08)',
-                borderWidth: 2,
-                tension: 0.3,
-                pointRadius: 4,
-                fill: true,
-            }],
-        },
-        options: {
-            responsive: true,
-            plugins: { legend: { display: false } },
-            scales: {
-                y: { beginAtZero: true, ticks: { precision: 0 } },
-            },
-        },
-    });
-
-    // ── Recetas más vistas ─────────────────────────────────────────
-    const recetaLabels = @json($recetasMasVistas->pluck('title'));
-    const recetaCounts = @json($recetasMasVistas->pluck('rating_count'));
-
-    new Chart(document.getElementById('chartRecetas'), {
-        type: 'bar',
-        data: {
-            labels: recetaLabels,
-            datasets: [{
-                label: 'Reseñas',
-                data: recetaCounts,
-                backgroundColor: 'rgba(108,117,125,0.5)',
-                borderColor: '#6c757d',
-                borderWidth: 1,
-            }],
-        },
-        options: {
-            responsive: true,
-            plugins: { legend: { display: false } },
-            scales: {
-                y: { beginAtZero: true, ticks: { precision: 0 } },
-            },
-        },
-    });
-})();
-</script>
-@endpush

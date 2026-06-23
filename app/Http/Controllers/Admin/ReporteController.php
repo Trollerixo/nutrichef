@@ -6,6 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\Recipe;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
+use PhpOffice\PhpSpreadsheet\Chart\Chart;
+use PhpOffice\PhpSpreadsheet\Chart\DataSeries;
+use PhpOffice\PhpSpreadsheet\Chart\DataSeriesValues;
+use PhpOffice\PhpSpreadsheet\Chart\Layout;
+use PhpOffice\PhpSpreadsheet\Chart\Legend;
+use PhpOffice\PhpSpreadsheet\Chart\PlotArea;
+use PhpOffice\PhpSpreadsheet\Chart\Title;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
@@ -98,17 +105,46 @@ class ReporteController extends Controller
                     $row++;
                 }
 
+                $dataSeriesLabels = [new DataSeriesValues(DataSeriesValues::DATASERIES_TYPE_STRING, 'Usuarios!$B$1', null, 1)];
+                $xAxisTickValues = [new DataSeriesValues(DataSeriesValues::DATASERIES_TYPE_STRING, 'Usuarios!$A$2:$A$' . (1 + count($usuariosPorMes)), null, count($usuariosPorMes))];
+                $dataSeriesValues = [new DataSeriesValues(DataSeriesValues::DATASERIES_TYPE_NUMBER, 'Usuarios!$B$2:$B$' . (1 + count($usuariosPorMes)), null, count($usuariosPorMes))];
+
+                $chartUsers = new Chart(
+                    'chartUsuarios',
+                    new Title('Usuarios por mes'),
+                    new Legend(Legend::POSITION_BOTTOM, null, false),
+                    new PlotArea(null, [new DataSeries(DataSeries::TYPE_BARCHART, DataSeries::GROUPING_CLUSTERED, [0], $dataSeriesLabels, $xAxisTickValues, $dataSeriesValues)]),
+                );
+                $chartUsers->setTopLeftPosition('D1');
+                $chartUsers->setBottomRightPosition('J15');
+                $sheet->addChart($chartUsers);
+
                 $spreadsheet->createSheet();
                 $sheet2 = $spreadsheet->getSheet(1);
                 $sheet2->setTitle('Recetas');
-                $sheet2->fromArray(['ID', 'Título', 'Vistas aproximadas', 'Puntuación promedio'], null, 'A1');
+                $sheet2->fromArray(['Título', 'Reseñas', 'Puntuación'], null, 'A1');
                 $row = 2;
                 foreach ($recetasMasVistas as $recipe) {
-                    $sheet2->fromArray([$recipe->id, $recipe->title, $recipe->rating_count, $recipe->rating_avg], null, "A{$row}");
+                    $sheet2->fromArray([$recipe->title, $recipe->rating_count, $recipe->rating_avg], null, "A{$row}");
                     $row++;
                 }
 
+                $dataSeriesLabels2 = [new DataSeriesValues(DataSeriesValues::DATASERIES_TYPE_STRING, 'Recetas!$B$1', null, 1)];
+                $xAxisTickValues2 = [new DataSeriesValues(DataSeriesValues::DATASERIES_TYPE_STRING, 'Recetas!$A$2:$A$' . (1 + count($recetasMasVistas)), null, count($recetasMasVistas))];
+                $dataSeriesValues2 = [new DataSeriesValues(DataSeriesValues::DATASERIES_TYPE_NUMBER, 'Recetas!$B$2:$B$' . (1 + count($recetasMasVistas)), null, count($recetasMasVistas))];
+
+                $chartRecetas = new Chart(
+                    'chartRecetas',
+                    new Title('Recetas más vistas'),
+                    new Legend(Legend::POSITION_BOTTOM, null, false),
+                    new PlotArea(null, [new DataSeries(DataSeries::TYPE_BARCHART, DataSeries::GROUPING_CLUSTERED, [0], $dataSeriesLabels2, $xAxisTickValues2, $dataSeriesValues2)]),
+                );
+                $chartRecetas->setTopLeftPosition('D1');
+                $chartRecetas->setBottomRightPosition('J15');
+                $sheet2->addChart($chartRecetas);
+
                 $writer = new Xlsx($spreadsheet);
+                $writer->setIncludeCharts(true);
 
                 return response()->streamDownload(function () use ($writer) {
                     $writer->save('php://output');

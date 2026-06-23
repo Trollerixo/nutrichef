@@ -191,89 +191,88 @@
             </form>
         </div>
     </div>
-</x-app-layout>
+    @push('scripts')
+    <script>
+    (function () {
+        const ingredientContainer = document.getElementById('ingredientsContainer');
+        const addIngredientButton = document.getElementById('addIngredientRow');
+        const ingredientTemplate = document.getElementById('ingredientRowTemplate').content.firstElementChild;
+        const stepContainer = document.getElementById('stepsContainer');
+        const addStepButton = document.getElementById('addStepRow');
+        const stepTemplate = document.getElementById('stepRowTemplate').content.firstElementChild;
 
-@push('scripts')
-<script>
-(function () {
-    const ingredientContainer = document.getElementById('ingredientsContainer');
-    const addIngredientButton = document.getElementById('addIngredientRow');
-    const ingredientTemplate = document.getElementById('ingredientRowTemplate').content.firstElementChild;
-    const stepContainer = document.getElementById('stepsContainer');
-    const addStepButton = document.getElementById('addStepRow');
-    const stepTemplate = document.getElementById('stepRowTemplate').content.firstElementChild;
-
-    function refreshIngredientNames() {
-        ingredientContainer.querySelectorAll('.ingredient-row').forEach((row, index) => {
-            row.querySelectorAll('[data-ingredient-field]').forEach((field) => {
-                field.name = `ingredients[${index}][${field.dataset.ingredientField}]`;
+        function refreshIngredientNames() {
+            ingredientContainer.querySelectorAll('.ingredient-row').forEach((row, index) => {
+                row.querySelectorAll('[data-ingredient-field]').forEach((field) => {
+                    field.name = `ingredients[${index}][${field.dataset.ingredientField}]`;
+                });
             });
-        });
-    }
+        }
 
-    function refreshStepNames() {
-        stepContainer.querySelectorAll('.step-row').forEach((row, index) => {
-            row.querySelectorAll('[data-step-field]').forEach((field) => {
-                field.name = `steps[${index}][${field.dataset.stepField}]`;
+        function refreshStepNames() {
+            stepContainer.querySelectorAll('.step-row').forEach((row, index) => {
+                row.querySelectorAll('[data-step-field]').forEach((field) => {
+                    field.name = `steps[${index}][${field.dataset.stepField}]`;
+                });
+
+                const title = row.querySelector('label');
+                if (title) {
+                    title.textContent = `Paso ${index + 1}`;
+                }
             });
+        }
 
-            const title = row.querySelector('label');
-            if (title) {
-                title.textContent = `Paso ${index + 1}`;
+        function addIngredientRow(values = { name: '', quantity: '', notes: '' }) {
+            const clone = ingredientTemplate.cloneNode(true);
+            clone.querySelectorAll('[data-ingredient-field]').forEach((field) => {
+                field.value = values[field.dataset.ingredientField] || '';
+            });
+            ingredientContainer.appendChild(clone);
+            refreshIngredientNames();
+        }
+
+        function addStepRow(values = { instruction: '' }) {
+            const clone = stepTemplate.cloneNode(true);
+            clone.querySelectorAll('[data-step-field]').forEach((field) => {
+                field.value = values[field.dataset.stepField] || '';
+            });
+            stepContainer.appendChild(clone);
+            refreshStepNames();
+        }
+
+        ingredientContainer.addEventListener('click', (event) => {
+            if (event.target.matches('.remove-ingredient-btn')) {
+                const row = event.target.closest('.ingredient-row');
+                if (row) {
+                    row.remove();
+                    refreshIngredientNames();
+                }
             }
         });
-    }
 
-    function addIngredientRow(values = { name: '', quantity: '', notes: '' }) {
-        const clone = ingredientTemplate.cloneNode(true);
-        clone.querySelectorAll('[data-ingredient-field]').forEach((field) => {
-            field.value = values[field.dataset.ingredientField] || '';
+        stepContainer.addEventListener('click', (event) => {
+            if (event.target.matches('.remove-step-btn')) {
+                const row = event.target.closest('.step-row');
+                if (row) {
+                    row.remove();
+                    refreshStepNames();
+                }
+            }
         });
-        ingredientContainer.appendChild(clone);
+
+        addIngredientButton.addEventListener('click', (event) => {
+            event.preventDefault();
+            addIngredientRow();
+        });
+
+        addStepButton.addEventListener('click', (event) => {
+            event.preventDefault();
+            addStepRow();
+        });
+
         refreshIngredientNames();
-    }
-
-    function addStepRow(values = { instruction: '' }) {
-        const clone = stepTemplate.cloneNode(true);
-        clone.querySelectorAll('[data-step-field]').forEach((field) => {
-            field.value = values[field.dataset.stepField] || '';
-        });
-        stepContainer.appendChild(clone);
         refreshStepNames();
-    }
-
-    ingredientContainer.addEventListener('click', (event) => {
-        if (event.target.matches('.remove-ingredient-btn')) {
-            const row = event.target.closest('.ingredient-row');
-            if (row) {
-                row.remove();
-                refreshIngredientNames();
-            }
-        }
-    });
-
-    stepContainer.addEventListener('click', (event) => {
-        if (event.target.matches('.remove-step-btn')) {
-            const row = event.target.closest('.step-row');
-            if (row) {
-                row.remove();
-                refreshStepNames();
-            }
-        }
-    });
-
-    addIngredientButton.addEventListener('click', (event) => {
-        event.preventDefault();
-        addIngredientRow();
-    });
-
-    addStepButton.addEventListener('click', (event) => {
-        event.preventDefault();
-        addStepRow();
-    });
-
-    refreshIngredientNames();
-    refreshStepNames();
-})();
-</script>
-@endpush
+    })();
+    </script>
+    @endpush
+</x-app-layout>
