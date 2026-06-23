@@ -76,7 +76,7 @@
         <li class="nav-item">
             <a href="{{ route('nutritionist.consultations.index') }}" class="nav-link {{ request()->routeIs('nutritionist.consultations.*') ? 'active' : '' }}"><i class="bi bi-chat-dots me-2"></i>Consultas</a>
         </li>
-    </ul>
+                    </ul>
 
 @else
     <p class="text-muted fw-semibold mb-2 px-1" style="font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;">

@@ -58,6 +58,19 @@ Route::middleware("auth")->group(function () {
         "profile.destroy",
     );
 
+    Route::get("/notificaciones", [
+        \App\Http\Controllers\NotificationController::class,
+        "index",
+    ])->name("notifications.index");
+    Route::post("/notificaciones/leer-todas", [
+        \App\Http\Controllers\NotificationController::class,
+        "markAllAsRead",
+    ])->name("notifications.readAll");
+    Route::post("/notificaciones/{notification}/leer", [
+        \App\Http\Controllers\NotificationController::class,
+        "markAsRead",
+    ])->name("notifications.read");
+
     Route::middleware("role:user")->group(function () {
         Route::get("/favoritas", [
             FavoriteRecipeController::class,
