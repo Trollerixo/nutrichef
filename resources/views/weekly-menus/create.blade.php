@@ -55,7 +55,7 @@
                                 <input data-slot-field="slot_date" name="slots[{{ $index }}][slot_date]" type="date"
                                        class="form-control @error('slots.'.$index.'.slot_date') is-invalid @enderror"
                                        value="{{ $slot['slot_date'] ?? '' }}"
-                                       min="{{ now()->format('Y-m-d') }}" max="{{ now()->addDays(7)->format('Y-m-d') }}">
+                                       min="{{ now()->format('Y-m-d') }}" max="{{ now()->addDays(6)->format('Y-m-d') }}">
                                 @error('slots.'.$index.'.slot_date')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -104,7 +104,7 @@
                         <div class="col-md-4">
                             <label class="form-label">Fecha</label>
                             <input data-slot-field="slot_date" type="date" class="form-control"
-                                   min="{{ now()->format('Y-m-d') }}" max="{{ now()->addDays(7)->format('Y-m-d') }}">
+                                   min="{{ now()->format('Y-m-d') }}" max="{{ now()->addDays(6)->format('Y-m-d') }}">
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Tipo de comida</label>

@@ -41,7 +41,7 @@
                 <div class="bar-row">
                     <div class="bar-label">{{ $item['mes'] }}</div>
                     <div class="bar-track">
-                        <div class="bar-fill" style="width: {{ $pct }}%; background: #6c757d;"></div>
+                        <div class="bar-fill" @php echo 'style="width:' . round($pct) . '%;background:#6c757d;"' @endphp></div>
                     </div>
                     <div class="bar-value">{{ $item['total'] }}</div>
                 </div>
@@ -81,9 +81,9 @@
                     $pct = ($recipe->rating_count / $maxRating) * 100;
                 @endphp
                 <div class="bar-row">
-                    <div class="bar-label" style="width: 120px;">{{ Str::limit($recipe->title, 20) }}</div>
+                    <div class="bar-label" style="width: 120px;">{{ \Illuminate\Support\Str::limit($recipe->title, 20) }}</div>
                     <div class="bar-track">
-                        <div class="bar-fill" style="width: {{ $pct }}%; background: #4a90d9;"></div>
+                        <div class="bar-fill" @php echo 'style="width:' . round($pct) . '%;background:#4a90d9;"' @endphp></div>
                     </div>
                     <div class="bar-value">{{ $recipe->rating_count }}</div>
                 </div>

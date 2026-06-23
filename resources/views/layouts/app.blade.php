@@ -68,8 +68,8 @@
                 <div class="d-flex align-items-center mb-2">
                     <i class="bi bi-person-circle fs-4 me-2 text-secondary"></i>
                     <div style="line-height:1.2;min-width:0;">
-                        <div class="fw-semibold small text-truncate">{{ Auth::user()->name }}</div>
-                        <div class="text-muted text-truncate" style="font-size:.75rem;">{{ Auth::user()->email }}</div>
+                        <div class="fw-semibold small text-truncate">{{ auth()->user()->name }}</div>
+                        <div class="text-muted text-truncate" style="font-size:.75rem;">{{ auth()->user()->email }}</div>
                     </div>
                 </div>
                 <form method="POST" action="{{ route('logout') }}">
@@ -106,13 +106,14 @@
         ]);
     @endphp
 
+    <script id="bell-data" type="application/json">@json($bellData)</script>
     <script>
     function notificationBell() {
         const readBase = '{{ url('/notificaciones') }}/';
         return {
             open: false,
             unread: {{ $bellUnread }},
-            items: @json($bellData),
+            items: JSON.parse(document.getElementById('bell-data').textContent),
             toggle() {
                 this.open = !this.open;
             },

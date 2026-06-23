@@ -37,6 +37,10 @@
     </div>
 
     @push('scripts')
+    <script id="chart-data-meses" type="application/json">@json($usuariosPorMes->pluck('mes'))</script>
+    <script id="chart-data-totals" type="application/json">@json($usuariosPorMes->pluck('total'))</script>
+    <script id="chart-data-receta-labels" type="application/json">@json($recetasMasVistas->pluck('title'))</script>
+    <script id="chart-data-receta-counts" type="application/json">@json($recetasMasVistas->pluck('rating_count'))</script>
     <script>
     (function () {
         function initCharts() {
@@ -45,8 +49,8 @@
                 return;
             }
 
-            const meses  = @json($usuariosPorMes->pluck('mes'));
-            const totals = @json($usuariosPorMes->pluck('total'));
+            const meses  = JSON.parse(document.getElementById('chart-data-meses').textContent);
+            const totals = JSON.parse(document.getElementById('chart-data-totals').textContent);
 
             new Chart(document.getElementById('chartUsuarios'), {
                 type: 'line',
@@ -72,8 +76,8 @@
                 },
             });
 
-            const recetaLabels = @json($recetasMasVistas->pluck('title'));
-            const recetaCounts = @json($recetasMasVistas->pluck('rating_count'));
+            const recetaLabels = JSON.parse(document.getElementById('chart-data-receta-labels').textContent);
+            const recetaCounts = JSON.parse(document.getElementById('chart-data-receta-counts').textContent);
 
             new Chart(document.getElementById('chartRecetas'), {
                 type: 'bar',

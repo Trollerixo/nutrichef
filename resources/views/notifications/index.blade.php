@@ -24,7 +24,7 @@
             $pivot = $notification->pivot;
             $isUnread = !$pivot->read;
         @endphp
-        <div class="card mb-3 {{ $isUnread ? 'border-start border-start-4 border-primary' : '' }}" style="{{ $isUnread ? 'border-left-width: 4px;' : '' }}">
+        <div class="card mb-3 {{ $isUnread ? 'border-start border-start-4 border-primary' : '' }}"@if($isUnread) style="border-left-width: 4px;" @endif>
             <div class="card-body py-3">
                 <div class="d-flex justify-content-between align-items-start gap-3">
                     <div class="flex-grow-1 min-w-0">

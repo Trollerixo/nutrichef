@@ -1,5 +1,5 @@
 @auth
-@php $user = Auth::user(); @endphp
+@php $user = auth()->user(); @endphp
 
 @if ($user->isAdmin())
     <p class="text-muted fw-semibold mb-2 px-1" style="font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;">
@@ -103,6 +103,9 @@
         </li>
         <li class="nav-item">
             <a href="{{ route('messages.index') }}" class="nav-link {{ request()->routeIs('messages.*') ? 'active' : '' }}"><i class="bi bi-chat me-2"></i>Mensajes</a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ route('recommendations.index') }}" class="nav-link {{ request()->routeIs('recommendations.*') ? 'active' : '' }}"><i class="bi bi-stars me-2"></i>Recomendaciones</a>
         </li>
         <li class="nav-item">
             <a href="{{ route('profile.edit') }}"

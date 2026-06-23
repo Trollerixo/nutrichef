@@ -287,7 +287,7 @@ class RecipeController extends Controller
         }
 
         $data = $request->validate([
-            'slot_date' => ['required', 'date', 'after_or_equal:today', 'before_or_equal:' . now()->addDays(7)->format('Y-m-d')],
+            'slot_date' => ['required', 'date', 'after_or_equal:today', 'before_or_equal:' . now()->addDays(6)->format('Y-m-d')],
             'meal_type' => ['required', Rule::in(['desayuno', 'almuerzo', 'cena', 'postre', 'piqueo'])],
         ]);
 

@@ -11,11 +11,14 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\RecipeController;
 use App\Http\Controllers\RecipeHistoryController;
+use App\Http\Controllers\RecommendationController;
 use App\Http\Controllers\ShoppingListController;
 use App\Http\Controllers\WeeklyMenuController;
 use App\Models\Recipe;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
+
+require __DIR__.'/auth.php';
 
 Route::get("/", function () {
     $featuredRecipe = null;
@@ -150,6 +153,11 @@ Route::middleware("auth")->group(function () {
         Route::get("/mensajes", [MessageController::class, "index"])->name(
             "messages.index",
         );
+
+        Route::get("/recomendaciones", [
+            RecommendationController::class,
+            "index",
+        ])->name("recommendations.index");
         Route::post("/mensajes", [MessageController::class, "store"])->name(
             "messages.store",
         );
@@ -392,5 +400,3 @@ Route::middleware(["auth", "verified", "role:admin"])
     Route::get("/recetas/{recipe}", [RecipeController::class, "show"])->name(
         "recipes.show",
     );
-
-require __DIR__ . "/auth.php";

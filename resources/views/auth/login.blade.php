@@ -21,7 +21,7 @@
                         <div class="mb-4">
                             <div class="d-flex justify-content-between align-items-center">
                                 <x-input-label for="password" value="Contraseña" />
-                                @if (Route::has('password.request'))
+                                @if (\Illuminate\Support\Facades\Route::has('password.request'))
                                     <a href="{{ route('password.request') }}"
                                        class="text-muted small text-decoration-none">¿Olvidaste?</a>
                                 @endif

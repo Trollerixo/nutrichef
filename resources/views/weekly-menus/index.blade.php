@@ -33,10 +33,14 @@
                             </form>
                         @endif
                         <a href="{{ route('weekly-menus.edit', $menu) }}" class="btn btn-outline-secondary btn-sm">Editar</a>
-                        <button type="button" class="btn btn-outline-danger btn-sm"
-                                @click="triggerDelete('{{ route('weekly-menus.destroy', $menu) }}', '¿Eliminar menú?', 'Se borrará el menú semanal completo y toda su planificación.')">
-                            Eliminar
-                        </button>
+                        <form action="{{ route('weekly-menus.destroy', $menu) }}" method="POST" class="d-inline">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-outline-danger btn-sm"
+                                    onclick="return confirm('¿Eliminar menú? Se borrará el menú semanal completo y toda su planificación.')">
+                                Eliminar
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -65,10 +69,14 @@
                                                         <span class="small fw-semibold">{{ $slot->recipe?->title ?? 'Receta eliminada' }}</span>
                                                     </div>
                                                     @if($slot->recipe)
-                                                        <button type="button" class="btn btn-link text-danger p-0"
-                                                                @click="triggerDelete('{{ route('weekly-menus.slots.destroy', $slot) }}', '¿Quitar del menú?', '¿Deseas eliminar esta receta de tu planificación del día?')">
-                                                            <i class="bi bi-x-circle"></i>
-                                                        </button>
+                                                        <form action="{{ route('weekly-menus.slots.destroy', $slot) }}" method="POST" class="d-inline">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="btn btn-link text-danger p-0"
+                                                                    onclick="return confirm('¿Quitar del menú? ¿Deseas eliminar esta receta de tu planificación del día?')">
+                                                                <i class="bi bi-x-circle"></i>
+                                                            </button>
+                                                        </form>
                                                     @endif
                                                 </div>
                                             </div>

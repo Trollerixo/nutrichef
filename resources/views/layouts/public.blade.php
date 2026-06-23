@@ -58,7 +58,7 @@
                         </div>
                         <div class="dropdown">
                             <button class="btn btn-link text-dark text-decoration-none dropdown-toggle p-0" type="button" data-bs-toggle="dropdown">
-                                <i class="bi bi-person-circle me-1"></i> {{ Auth::user()->name }}
+                                <i class="bi bi-person-circle me-1"></i> {{ auth()->user()->name }}
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end shadow border-0">
                                 <li><a class="dropdown-item" href="{{ route('dashboard') }}"><i class="bi bi-speedometer2 me-2"></i>Mi panel</a></li>
@@ -111,6 +111,7 @@
                 'read' => (bool) $n->pivot?->read,
             ]);
         @endphp
+        <script id="pub-bell-data" type="application/json">@json($pubBellData)</script>
     @endauth
 
     <script>
@@ -119,7 +120,7 @@
         return {
             open: false,
             unread: {{ auth()->check() ? $pubBellUnread : 0 }},
-            items: @json(auth()->check() ? $pubBellData : []),
+            items: JSON.parse(document.getElementById('pub-bell-data')?.textContent || '[]'),
             toggle() {
                 this.open = !this.open;
             },

@@ -30,7 +30,7 @@ class WeeklyMenuController extends Controller
         $data = $request->validated();
 
         $today = now()->startOfDay();
-        $maxDate = (clone $today)->addDays(7);
+        $maxDate = (clone $today)->addDays(6);
 
         foreach ($data['slots'] as $i => $slot) {
             $date = $slot['slot_date'];
@@ -118,7 +118,7 @@ class WeeklyMenuController extends Controller
         abort_if($menu->user_id !== auth()->id(), 403);
 
         $data = $request->validate([
-            'slot_date' => ['required', 'date', 'after_or_equal:today', 'before_or_equal:' . now()->addDays(7)->format('Y-m-d')],
+            'slot_date' => ['required', 'date', 'after_or_equal:today', 'before_or_equal:' . now()->addDays(6)->format('Y-m-d')],
             'meal_type' => ['required', 'in:desayuno,almuerzo,cena,postre,piqueo'],
             'recipe_id' => ['required', 'exists:recipes,id'],
         ]);

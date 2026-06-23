@@ -175,7 +175,7 @@
 
             <div class="row g-3">
                 @forelse ($recipes as $index => $recipe)
-                    <div class="col-md-6 nc-fade-in" style="animation-delay: {{ $index * 0.05 }}s">
+                    <div class="col-md-6 nc-fade-in"@php echo ' style="animation-delay:' . ($index * 0.05) . 's"' @endphp>
                         <a href="{{ route('recipes.show', $recipe) }}" class="text-decoration-none text-dark">
                             <div class="card h-100 nc-card-hover border-0 shadow-sm">
                                 @if($recipe->image_url)

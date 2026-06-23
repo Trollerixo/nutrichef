@@ -294,6 +294,7 @@
             </div>
         </div>
 
+        <script id="menu-slots-data" type="application/json">@json($activeMenu?->slots ?? [])</script>
         <script>
         function addToMenuData() {
             const typeLabels = {
@@ -303,10 +304,10 @@
                 postre: 'Postre',
                 piqueo: 'Piqueo / Snack'
             };
-            const existingSlots = @json($activeMenu?->slots ?? []);
+            const existingSlots = JSON.parse(document.getElementById('menu-slots-data').textContent);
             return {
                 today: new Date().toISOString().split('T')[0],
-                maxDate: new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0],
+                maxDate: new Date(Date.now() + 6 * 86400000).toISOString().split('T')[0],
                 slotDate: new Date().toISOString().split('T')[0],
                 mealType: '',
                 loading: false,

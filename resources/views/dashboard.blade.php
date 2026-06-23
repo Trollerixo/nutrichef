@@ -1,5 +1,5 @@
 <x-app-layout>
-    @php $user = Auth::user(); @endphp
+    @php $user = auth()->user(); @endphp
 
     {{-- Welcome Section --}}
     <div class="row mb-4 align-items-center">
@@ -105,16 +105,48 @@
                 </div>
             </div>
 
-            {{-- Recommendations teaser --}}
+            {{-- Recommendations --}}
             <div class="col-lg-4">
+                @php
+                    $latestRecs = $user->receivedRecommendations()
+                        ->with(['nutritionist', 'recipe'])
+                        ->latest('sent_at')
+                        ->limit(3)
+                        ->get();
+                @endphp
                 <div class="card h-100 border-0 shadow-sm" style="background-color: #f1f5f9;">
                     <div class="card-body">
-                        <h6 class="fw-bold mb-3">Recomendaciones</h6>
-                        <div class="text-center py-3">
-                            <i class="bi bi-stars fs-1 text-warning mb-2"></i>
-                            <p class="text-muted small">Completa tu perfil para que nuestros nutricionistas puedan darte consejos personalizados.</p>
-                            <a href="{{ route('profile.edit') }}" class="btn btn-dark btn-sm w-100">Completar Perfil</a>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="fw-bold mb-0">Recomendaciones</h6>
+                            @if($latestRecs->isNotEmpty())
+                                <a href="{{ route('recommendations.index') }}" class="btn btn-sm btn-link p-0 text-decoration-none fw-semibold" style="color: var(--nc-secondary);">Ver todas →</a>
+                            @endif
                         </div>
+                        @if($latestRecs->isEmpty())
+                            <div class="text-center py-3">
+                                <i class="bi bi-stars fs-1 text-warning mb-2"></i>
+                                <p class="text-muted small">Tus nutricionistas te enviarán recomendaciones personalizadas.</p>
+                                <a href="{{ route('recipes.index') }}" class="btn btn-dark btn-sm w-100">Explorar recetas</a>
+                            </div>
+                        @else
+                            @foreach($latestRecs as $rec)
+                                <div class="d-flex align-items-start gap-2 mb-2 pb-2 border-bottom border-light">
+                                    <i class="bi bi-star-fill text-warning mt-1"></i>
+                                    <div class="min-w-0">
+                                        <div class="small fw-semibold text-truncate">
+                                            @if($rec->recipe)
+                                                <a href="{{ route('recipes.show', $rec->recipe) }}" class="text-decoration-none text-dark">{{ $rec->recipe->title }}</a>
+                                            @else
+                                                <span class="text-muted">Receta eliminada</span>
+                                            @endif
+                                        </div>
+                                        <div class="text-muted" style="font-size: 0.7rem;">
+                                            {{ $rec->nutritionist?->name ?? 'Nutricionista' }} · {{ $rec->sent_at->format('d M Y') }}
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        @endif
                     </div>
                 </div>
             </div>
