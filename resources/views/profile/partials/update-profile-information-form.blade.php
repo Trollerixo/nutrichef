@@ -1,4 +1,6 @@
-<h4 class="fw-semibold mb-4">Datos personales</h4>
+<h4 class="fw-semibold mb-4">
+    <img src="{{ asset('images/icons/editar_perfil_de_usuario.svg') }}" alt="" class="nc-icon me-2">Datos personales
+</h4>
 
 <form method="POST" action="{{ route('profile.update') }}">
     @csrf
@@ -23,5 +25,7 @@
         <div class="alert alert-success mb-3">Perfil actualizado correctamente.</div>
     @endif
 
-    <x-primary-button>Guardar cambios</x-primary-button>
+    <x-primary-button>
+        <img src="{{ asset('images/icons/guardar_datos_de_usuario.svg') }}" alt="" class="nc-icon me-1">Guardar cambios
+    </x-primary-button>
 </form>

@@ -1,8 +1,8 @@
 <x-app-layout>
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="fw-bold h2 mb-0">Nutricionistas</h1>
-        <a href="{{ route('admin.nutricionistas.create') }}" class="btn btn-outline-secondary">
-            <i class="bi bi-plus me-1"></i>Nuevo +
+        <a href="{{ route('admin.nutricionistas.create') }}" class="btn btn-dark">
+            <img src="{{ asset('images/icons/gestionar_usuario.svg') }}" alt="" class="nc-icon me-1">Nuevo nutricionista
         </a>
     </div>
 
@@ -40,7 +40,8 @@
                                           class="d-inline">
                                         @csrf
                                         @method('PATCH')
-                                        <button type="submit" class="btn btn-outline-secondary btn-sm">
+                                        <button type="submit" class="btn {{ $nutricionista->active ? 'btn-outline-danger' : 'btn-outline-success' }} btn-sm">
+                                            <img src="{{ asset('images/icons/'.($nutricionista->active ? 'bloquear_usuario' : 'habilitar_usuario').'.svg') }}" alt="" class="nc-icon-sm me-1">
                                             {{ $nutricionista->active ? 'Desactivar' : 'Activar' }}
                                         </button>
                                     </form>

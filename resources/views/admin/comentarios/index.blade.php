@@ -55,7 +55,7 @@
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-sm btn-outline-danger">
-                                    <i class="bi bi-trash me-1"></i>Eliminar
+                                    <img src="{{ asset('images/icons/eliminar_comentario.svg') }}" alt="" class="nc-icon-sm me-1">Eliminar
                                 </button>
                             </form>
                         </div>

@@ -37,6 +37,11 @@ class RecipeRequest extends FormRequest
             'ingredients.*.notes' => ['nullable', 'string', 'max:255'],
             'steps' => ['array'],
             'steps.*.instruction' => ['nullable', 'string'],
+            'nutrition' => ['nullable', 'array'],
+            'nutrition.proteins_g' => ['nullable', 'numeric', 'min:0'],
+            'nutrition.carbs_g' => ['nullable', 'numeric', 'min:0'],
+            'nutrition.fats_g' => ['nullable', 'numeric', 'min:0'],
+            'nutrition.fiber_g' => ['nullable', 'numeric', 'min:0'],
         ];
     }
 }

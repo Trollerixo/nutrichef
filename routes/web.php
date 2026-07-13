@@ -25,20 +25,21 @@ Route::get("/", function () {
     $featuredRecipes = collect();
 
     if (Schema::hasTable("recipes")) {
-        $baseFeatured = Recipe::published()
-            ->with(["category"])
-            ->featuredThisWeek();
-
-        $featuredRecipe = (clone $baseFeatured)
-            ->topRated()
-            ->first()
-            ?? Recipe::published()->with(["category"])->topRated()->first();
-
         $featuredRecipes = Recipe::published()
             ->with(["category"])
             ->topRated()
             ->limit(3)
             ->get();
+
+        $featuredRecipe = Recipe::published()
+            ->with(["category"])
+            ->featuredThisWeek()
+            ->topRated()
+            ->first();
+
+        if (!$featuredRecipe) {
+            $featuredRecipe = $featuredRecipes->first();
+        }
     }
 
     return view("welcome", compact("featuredRecipe", "featuredRecipes"));

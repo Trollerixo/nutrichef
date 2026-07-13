@@ -51,6 +51,7 @@
                 <div class="mb-3">
                     <label for="password" class="form-label">Nueva contraseña</label>
                     <input id="password" name="password" type="password" class="form-control @error('password') is-invalid @enderror">
+                    <small class="text-muted d-block mt-1">Dejar en blanco para mantener la contraseña actual.</small>
                     @error('password')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
@@ -61,7 +62,9 @@
                     <input id="password_confirmation" name="password_confirmation" type="password" class="form-control">
                 </div>
 
-                <button type="submit" class="btn btn-dark">Guardar cambios</button>
+                <button type="submit" class="btn btn-dark">
+                    <img src="{{ asset('images/icons/guardar_datos_de_usuario.svg') }}" alt="" class="nc-icon me-1">Guardar cambios
+                </button>
             </form>
         </div>
     </div>

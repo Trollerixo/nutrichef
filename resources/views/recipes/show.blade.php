@@ -32,13 +32,17 @@
                                     @csrf
                                     <button type="submit" class="btn btn-outline-secondary btn-sm mb-2 btn-favorite {{ $isFavorite ? 'active' : '' }}" aria-label="{{ $isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos' }}">
                                         <span x-show="loadingFav" class="spinner-border spinner-border-sm" role="status" x-cloak></span>
-                                        <span x-show="!loadingFav"><i class="bi bi-heart{{ $isFavorite ? '-fill text-danger' : '' }}"></i> Favorito</span>
+                                        <span x-show="!loadingFav"><img src="{{ asset('images/icons/añadir_favorito.svg') }}" alt="" class="nc-icon-sm me-1">Favorito</span>
                                     </button>
                                 </form>
                                 <button type="button" class="btn btn-outline-secondary btn-sm mb-2"
                                         data-bs-toggle="modal" data-bs-target="#addToMenuModal"
                                         aria-label="Agregar al menú semanal">
-                                    <i class="bi bi-calendar-plus"></i> + Menú
+                                    <i class="bi bi-calendar-plus"></i> Menú
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm mb-2" id="btn-compartir"
+                                        aria-label="Compartir receta" title="Compartir receta">
+                                    <img src="{{ asset('images/icons/compartir_receta.svg') }}" alt="" class="nc-icon-sm me-1">Compartir
                                 </button>
                             @else
                                 <a href="{{ route('login') }}" class="btn btn-outline-secondary btn-sm mb-2">Inicia sesión para acciones</a>
@@ -169,6 +173,7 @@
                                             <template x-for="i in 5" :key="i">
                                                 <button type="button" class="btn btn-link text-decoration-none p-0 me-1"
                                                         :class="i <= rating ? 'text-warning' : 'text-secondary'"
+                                                        :aria-label="'Calificar con ' + i + ' estrellas'"
                                                         @click="rating = i">
                                                     <i class="bi" :class="i <= rating ? 'bi-star-fill' : 'bi-star'"></i>
                                                 </button>
@@ -187,7 +192,7 @@
                                         @enderror
                                     </div>
                                     <button type="submit" class="btn btn-dark btn-sm">
-                                        <i class="bi bi-send me-1"></i> Publicar
+                                        <img src="{{ asset('images/icons/añadir_nota.svg') }}" alt="" class="nc-icon-sm me-1">Publicar
                                     </button>
                                 </form>
                             </div>
@@ -325,4 +330,24 @@
         }
         </script>
     @endauth
+
+@push('scripts')
+<script>
+    document.getElementById('btn-compartir')?.addEventListener('click', function () {
+        const url  = window.location.href;
+        const title = document.querySelector('h1')?.innerText || 'Receta NutriChef';
+        if (navigator.share) {
+            navigator.share({ title, url }).catch(() => {});
+        } else {
+            navigator.clipboard.writeText(url).then(() => {
+                const btn = document.getElementById('btn-compartir');
+                const original = btn.innerHTML;
+                btn.innerHTML = '<i class="bi bi-check2 me-1"></i>¡Copiado!';
+                btn.disabled = true;
+                setTimeout(() => { btn.innerHTML = original; btn.disabled = false; }, 2000);
+            });
+        }
+    });
+</script>
+@endpush
 </x-public-layout>

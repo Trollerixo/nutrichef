@@ -4,7 +4,9 @@
             <h1 class="fw-bold h2 mb-1">Recetas</h1>
             <p class="text-muted mb-0">Listado de recetas en el sistema.</p>
         </div>
-        <a href="{{ route('admin.recetas.create') }}" class="btn btn-outline-secondary">Nueva receta</a>
+        <a href="{{ route('admin.recetas.create') }}" class="btn btn-dark">
+        <img src="{{ asset('images/icons/añadir_receta.svg') }}" alt="" class="nc-icon me-1">Nueva receta
+        </a>
     </div>
 
     <div class="table-responsive">
@@ -28,11 +30,15 @@
                         <td>{{ $recipe->published ? 'Publicada' : 'Borrador' }}</td>
                         <td>{{ optional($recipe->featured_date)->format('d/m/Y') ?? '—' }}</td>
                         <td class="text-end">
-                            <a href="{{ route('admin.recetas.edit', $recipe) }}" class="btn btn-outline-secondary btn-sm me-2">Editar</a>
+                            <a href="{{ route('admin.recetas.edit', $recipe) }}" class="btn btn-outline-secondary btn-sm me-2">
+                                <img src="{{ asset('images/icons/gestionar_receta.svg') }}" alt="" class="nc-icon-sm me-1">Gestionar
+                            </a>
                             <form action="{{ route('admin.recetas.destroy', $recipe) }}" method="POST" class="d-inline-block" onsubmit="return confirm('¿Eliminar esta receta?');">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-outline-danger btn-sm">Eliminar</button>
+                                <button type="submit" class="btn btn-outline-danger btn-sm">
+                                    <img src="{{ asset('images/icons/eliminar_receta.svg') }}" alt="" class="nc-icon-sm me-1">Eliminar
+                                </button>
                             </form>
                         </td>
                     </tr>

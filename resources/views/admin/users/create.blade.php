@@ -59,7 +59,9 @@
                     <input id="password_confirmation" name="password_confirmation" type="password" class="form-control">
                 </div>
 
-                <button type="submit" class="btn btn-dark">Crear usuario</button>
+                <button type="submit" class="btn btn-dark">
+                    <img src="{{ asset('images/icons/crear_o_registrar_usuario.svg') }}" alt="" class="nc-icon me-1">Crear usuario
+                </button>
             </form>
         </div>
     </div>

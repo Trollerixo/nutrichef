@@ -8,39 +8,42 @@ class RecipeHistoryController extends Controller
 {
     public function index(Request $request)
     {
-        $raw = $request
-            ->user()
-            ->recipeHistory()
-            ->with(["recipe.category", "recipe.nutrition"])
-            ->latest("occurred_at")
-            ->get();
+        $user = $request->user();
 
-        $grouped = $raw->groupBy(fn ($e) => $e->recipe_id ?? "deleted_" . $e->id)
-            ->map(function ($entries) {
-                $first = $entries->first();
-                $actions = $entries->pluck("action")->countBy();
+        // 1. Paginate unique recipe_ids from the user's history based on the latest occurred_at
+        $paginatedIds = $user->recipeHistory()
+            ->select('recipe_id')
+            ->selectRaw('MAX(occurred_at) as last_seen')
+            ->groupBy('recipe_id')
+            ->orderByDesc('last_seen')
+            ->paginate(15);
 
-                return (object) [
-                    "recipe" => $first->recipe,
-                    "actions" => $actions,
-                    "entries" => $entries,
-                    "last_seen" => $entries->first()->occurred_at,
-                    "count" => $entries->count(),
-                ];
-            })
-            ->sortByDesc("last_seen")
-            ->values();
+        // 2. Fetch the full detailed history entries only for the recipes on the current page
+        $recipeIds = $paginatedIds->pluck('recipe_id')->filter()->all();
 
-        $page = $request->input("page", 1);
-        $perPage = 15;
-        $total = $grouped->count();
-        $history = new \Illuminate\Pagination\LengthAwarePaginator(
-            $grouped->forPage($page, $perPage),
-            $total,
-            $perPage,
-            $page,
-            ["path" => $request->url(), "query" => $request->query()],
-        );
+        $historyDetails = $user->recipeHistory()
+            ->whereIn('recipe_id', $recipeIds)
+            ->with(['recipe.category', 'recipe.nutrition'])
+            ->latest('occurred_at')
+            ->get()
+            ->groupBy('recipe_id');
+
+        // 3. Map the paginated collection to match the structure expected by the view
+        $paginatedIds->getCollection()->transform(function ($item) use ($historyDetails) {
+            $entries = $historyDetails->get($item->recipe_id) ?: collect();
+            $first = $entries->first();
+            $actions = $entries->pluck('action')->countBy();
+
+            return (object) [
+                'recipe' => $first ? $first->recipe : null,
+                'actions' => $actions,
+                'entries' => $entries,
+                'last_seen' => \Carbon\Carbon::parse($item->last_seen),
+                'count' => $entries->count(),
+            ];
+        });
+
+        $history = $paginatedIds;
 
         return view("history.index", compact("history"));
     }

@@ -23,7 +23,9 @@
                         <input id="title" name="title" class="form-control" value="Lista de compras" placeholder="Título de la lista (ej. Compras Semanales)">
                     </div>
                     <div class="col-sm-4 d-grid">
-                        <button type="submit" class="btn btn-dark">Crear nueva lista</button>
+                        <button type="submit" class="btn btn-dark">
+                        <img src="{{ asset('images/icons/crear_lista_de_compras.svg') }}" alt="" class="nc-icon me-1">Crear nueva lista
+                        </button>
                     </div>
                 </div>
             </form>
@@ -36,16 +38,21 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="flex-grow-1">
                         <template x-if="!editing">
-                            <h5 class="mb-0 fw-bold" @click="editing = true" style="cursor: pointer;">
-                                {{ $list->title }} <i class="bi bi-pencil-square ms-2 fs-6 text-muted"></i>
-                            </h5>
+                            <div class="d-flex align-items-center gap-2">
+                                <h5 class="mb-0 fw-bold">{{ $list->title }}</h5>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" @click="editing = true" title="Editar nombre" aria-label="Editar nombre de la lista">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                            </div>
                         </template>
                         <template x-if="editing">
                             <form action="{{ route('shopping.update', $list) }}" method="POST" class="d-flex gap-2">
                                 @csrf
                                 @method('PUT')
                                 <input type="text" name="title" class="form-control form-control-sm w-50" value="{{ $list->title }}" autofocus>
-                                <button type="submit" class="btn btn-primary btn-sm">Guardar</button>
+                                <button type="submit" class="btn btn-primary btn-sm">
+                                    <img src="{{ asset('images/icons/guardar_lista_de_compras.svg') }}" alt="" class="nc-icon-sm me-1">Guardar
+                                </button>
                                 <button type="button" class="btn btn-outline-secondary btn-sm" @click="editing = false">Cancelar</button>
                             </form>
                         </template>
@@ -53,6 +60,11 @@
                     <div class="d-flex gap-2">
                         <button class="btn btn-outline-dark btn-sm" @click="adding = !adding">
                             <i class="bi bi-plus-lg me-1"></i> Ítem
+                        </button>
+                        <button type="button" class="btn btn-outline-dark btn-sm js-download-list" title="Descargar lista como texto" aria-label="Descargar lista"
+                                data-title="{{ $list->title }}"
+                                data-items='@json($list->items->map(fn($item) => ["name" => $item->name, "quantity" => $item->quantity]))'>
+                            <img src="{{ asset('images/icons/descargar_lista_de_compras.svg') }}" alt="" class="nc-icon-lg">
                         </button>
                         <button type="button" class="btn btn-outline-danger btn-sm"
                                 @click="triggerDelete('{{ route('shopping.destroy', $list) }}', '¿Eliminar lista?', 'Se borrará la lista \'{{ $list->title }}\' y todos sus productos.')">
@@ -89,12 +101,26 @@
                 @else
                     <ul class="list-group list-group-flush">
                         @foreach ($list->items as $item)
-                            <li class="list-group-item d-flex justify-content-between align-items-center py-3" x-data="{ checked: {{ $item->checked ? 'true' : 'false' }} }">
+                            <li class="list-group-item d-flex justify-content-between align-items-center py-3"
+                                x-data="{
+                                    checked: {{ $item->checked ? 'true' : 'false' }},
+                                    toggle() {
+                                        const previous = this.checked;
+                                        axios.patch('/lista-compras/items/{{ $item->id }}/toggle')
+                                            .then(response => {
+                                                this.checked = response.data.checked;
+                                                showToast(response.data.message);
+                                            })
+                                            .catch(() => {
+                                                this.checked = previous;
+                                            });
+                                    }
+                                }">
                                 <div class="d-flex align-items-center">
                                     <div class="me-3">
                                         <input class="form-check-input" type="checkbox"
                                                x-model="checked"
-                                               @click="toggleCheckbox($el, {{ $item->id }})"
+                                               @change="toggle()"
                                                style="width: 1.25rem; height: 1.25rem; cursor: pointer;">
                                     </div>
                                     <div class="item-text" :class="{ 'text-decoration-line-through text-muted': checked }">
@@ -124,22 +150,34 @@
     @endforelse
 @push('scripts')
 <script>
-    function toggleCheckbox(el, itemId) {
-        const originalChecked = !el.checked;
-        axios.patch('/lista-compras/items/' + itemId + '/toggle')
-            .then(response => {
-                const itemText = el.closest('li').querySelector('.item-text');
-                if (response.data.checked) {
-                    itemText.classList.add('text-decoration-line-through', 'text-muted');
-                } else {
-                    itemText.classList.remove('text-decoration-line-through', 'text-muted');
-                }
-                showToast(response.data.message);
-            })
-            .catch(() => {
-                el.checked = originalChecked;
+    function downloadShoppingList(title, items) {
+        let content = title + '\n' + '='.repeat(title.length) + '\n\n';
+        if (!items.length) {
+            content += 'Esta lista está vacía.\n';
+        } else {
+            items.forEach(item => {
+                content += '- ' + item.name + (item.quantity ? ' (' + item.quantity + ')' : '') + '\n';
             });
+        }
+        const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = title.replace(/[^a-z0-9]+/gi, '_') + '.txt';
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
     }
+
+    document.querySelectorAll('.js-download-list').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            const items = JSON.parse(btn.dataset.items || '[]');
+            downloadShoppingList(btn.dataset.title || 'Lista de compras', items);
+        });
+    });
+
+
 
     function showToast(message) {
         let container = document.querySelector('.toast-container');

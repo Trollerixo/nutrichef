@@ -4,7 +4,9 @@
             <h1 class="fw-bold h2 mb-1">Planes</h1>
             <p class="text-muted mb-0">Menús semanales asignados a tus pacientes.</p>
         </div>
-        <a href="{{ route('nutritionist.plans.create') }}" class="btn btn-outline-secondary">Nuevo plan</a>
+        <a href="{{ route('nutritionist.plans.create') }}" class="btn btn-dark">
+            <img src="{{ asset('images/icons/crear_plan_alimenticio.svg') }}" alt="" class="nc-icon me-1">Nuevo plan
+        </a>
     </div>
 
     @if ($menus->isEmpty())
@@ -18,7 +20,14 @@
                             <h5 class="fw-semibold">{{ $menu->title }}</h5>
                             <small class="text-muted">Paciente: {{ $menu->user?->name ?? 'N/A' }}</small>
                         </div>
-                        <span class="badge bg-secondary text-uppercase">{{ $menu->status }}</span>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-secondary text-uppercase">{{ $menu->status }}</span>
+                            <button type="button" class="btn btn-outline-dark btn-sm js-download-menu" title="Descargar plan como texto" aria-label="Descargar plan"
+                                    data-title="{{ $menu->title }}"
+                                    data-slots='@json($menu->slots->sortBy("slot_date")->map(fn($slot) => ["date" => optional($slot->slot_date)->format("d/m/Y"), "meal_type" => $slot->meal_type, "recipe" => $slot->recipe?->title ?? "Receta eliminada"]))'>
+                                <img src="{{ asset('images/icons/descargar_plan_alimenticio.svg') }}" alt="" class="nc-icon-lg">
+                            </button>
+                        </div>
                     </div>
                     <p class="text-muted small mb-3">{{ $menu->notes }}</p>
                     <div class="row g-3">
@@ -38,4 +47,35 @@
             </div>
         @endforeach
     @endif
+
+    @push('scripts')
+    <script>
+        function downloadWeeklyMenu(title, slots) {
+            let content = title + '\n' + '='.repeat(title.length) + '\n\n';
+            if (!slots.length) {
+                content += 'Este plan aún no tiene recetas asignadas.\n';
+            } else {
+                slots.forEach(slot => {
+                    content += slot.date + ' - ' + slot.meal_type + ': ' + slot.recipe + '\n';
+                });
+            }
+            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = title.replace(/[^a-z0-9]+/gi, '_') + '.txt';
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            URL.revokeObjectURL(url);
+        }
+
+        document.querySelectorAll('.js-download-menu').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                const slots = JSON.parse(btn.dataset.slots || '[]');
+                downloadWeeklyMenu(btn.dataset.title || 'Plan alimenticio', slots);
+            });
+        });
+    </script>
+    @endpush
 </x-app-layout>

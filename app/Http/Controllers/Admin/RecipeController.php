@@ -9,6 +9,7 @@ use App\Models\Ingredient;
 use App\Models\Recipe;
 use App\Models\RecipeStep;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class RecipeController extends Controller
@@ -37,12 +38,15 @@ class RecipeController extends Controller
             ? $request->file('image')->store('recipes', 'public')
             : null;
 
-        $recipe = Recipe::create($data);
-        $this->syncRecipeIngredientsAndSteps(
-            $recipe,
-            $data['ingredients'] ?? [],
-            $data['steps'] ?? [],
-        );
+        DB::transaction(function () use ($data) {
+            $recipe = Recipe::create($data);
+            $this->syncRecipeIngredientsAndSteps(
+                $recipe,
+                $data['ingredients'] ?? [],
+                $data['steps'] ?? [],
+            );
+            $this->syncRecipeNutrition($recipe, $data['nutrition'] ?? []);
+        });
 
         return redirect()->route('admin.recetas.index')->with('success', 'Receta creada correctamente.');
     }
@@ -66,12 +70,15 @@ class RecipeController extends Controller
             unset($data['image']);
         }
 
-        $recipe->update($data);
-        $this->syncRecipeIngredientsAndSteps(
-            $recipe,
-            $data['ingredients'] ?? [],
-            $data['steps'] ?? [],
-        );
+        DB::transaction(function () use ($recipe, $data) {
+            $recipe->update($data);
+            $this->syncRecipeIngredientsAndSteps(
+                $recipe,
+                $data['ingredients'] ?? [],
+                $data['steps'] ?? [],
+            );
+            $this->syncRecipeNutrition($recipe, $data['nutrition'] ?? []);
+        });
 
         return redirect()->route('admin.recetas.index')->with('success', 'Receta actualizada correctamente.');
     }
@@ -81,7 +88,26 @@ class RecipeController extends Controller
         $this->deleteStoredImage($recipe->image);
         $recipe->delete();
 
-        return redirect()->route('admin.recetas.index')->with('success', 'Receta eliminada correctamente.');
+        return redirect()->route('admin.recetas.index')->with('success', 'Receta actualizada correctamente.');
+    }
+
+    private function syncRecipeNutrition(Recipe $recipe, array $nutritionData): void
+    {
+        $hasData = collect($nutritionData)->contains(fn($val) => !is_null($val) && $val !== '');
+
+        if ($hasData) {
+            $recipe->nutrition()->updateOrCreate(
+                [],
+                [
+                    'proteins_g' => $nutritionData['proteins_g'] ?? null,
+                    'carbs_g'    => $nutritionData['carbs_g'] ?? null,
+                    'fats_g'     => $nutritionData['fats_g'] ?? null,
+                    'fiber_g'    => $nutritionData['fiber_g'] ?? null,
+                ]
+            );
+        } else {
+            $recipe->nutrition()->delete();
+        }
     }
 
     private function syncRecipeIngredientsAndSteps(Recipe $recipe, array $ingredients, array $steps): void

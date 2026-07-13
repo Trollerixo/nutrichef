@@ -25,7 +25,9 @@ return new class extends Migration
             $table->foreign('recipe_id')->references('id')->on('recipes')->cascadeOnDelete();
         });
 
-        DB::statement("ALTER TABLE menu_slots MODIFY COLUMN meal_type ENUM('desayuno', 'almuerzo', 'cena', 'postre', 'piqueo') NOT NULL");
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE menu_slots MODIFY COLUMN meal_type ENUM('desayuno', 'almuerzo', 'cena', 'postre', 'piqueo') NOT NULL");
+        }
     }
 
     public function down(): void
@@ -40,7 +42,9 @@ return new class extends Migration
             $table->foreign('recipe_id')->references('id')->on('recipes')->cascadeOnDelete();
         });
 
-        DB::statement("ALTER TABLE menu_slots MODIFY COLUMN meal_type ENUM('desayuno', 'almuerzo', 'cena') NOT NULL");
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE menu_slots MODIFY COLUMN meal_type ENUM('desayuno', 'almuerzo', 'cena') NOT NULL");
+        }
 
         Schema::table('weekly_menus', function (Blueprint $table) {
             $table->dropColumn('active');

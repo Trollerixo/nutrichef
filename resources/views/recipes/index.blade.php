@@ -20,7 +20,7 @@
                             {{-- Mis Ingredientes --}}
                             <div class="mb-4">
                                 <label class="form-label small fw-bold text-uppercase mb-2 text-muted" style="letter-spacing: 0.05em;">
-                                    <i class="bi bi-basket2 me-1"></i> Tengo en casa
+                                    <img src="{{ asset('images/icons/buscar_ingredientes.svg') }}" alt="" class="nc-icon-sm me-1"> Tengo en casa
                                 </label>
                                 @php
                                     $ingredientNames = $ingredients->pluck('name')->values()->all();
@@ -93,7 +93,7 @@
                             {{-- Búsqueda --}}
                             <div class="mb-4">
                                 <label class="form-label small fw-bold text-uppercase mb-2 text-muted" style="letter-spacing: 0.05em;">
-                                    <i class="bi bi-search me-1"></i> Buscar Receta
+                                    <img src="{{ asset('images/icons/buscar_receta.svg') }}" alt="" class="nc-icon-sm me-1"> Buscar Receta
                                 </label>
                                 <input id="search" name="search" type="text" class="form-control border-0 bg-light p-2 px-3" value="{{ request('search') }}" placeholder="Ej. ensalada, pollo...">
                             </div>

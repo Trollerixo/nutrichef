@@ -123,7 +123,7 @@ body {
 
 .nc-badge {
     background-color: var(--nc-primary-light);
-    color: var(--nc-primary);
+    color: #1b4332;
     padding: 4px 10px;
     border-radius: 20px;
     font-size: 0.75rem;
@@ -176,6 +176,155 @@ body {
 :focus-visible {
     outline: 3px solid var(--nc-secondary);
     outline-offset: 2px;
+}
+
+/* ─── Icon images (public/images/icons) ───────────────────────
+   All SVGs use fill/stroke="#000000" on transparent background.
+   filter: brightness(0) invert(1) converts them cleanly to white.
+──────────────────────────────────────────────────────────────── */
+
+.nc-icon {
+    width: 1.45rem;
+    height: 1.45rem;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    vertical-align: middle;
+    display: inline-block;
+    flex-shrink: 0;
+    overflow: hidden;
+    transition:
+        filter 0.15s ease,
+        opacity 0.15s ease;
+}
+
+.nc-icon-sm {
+    width: 1.15rem;
+    height: 1.15rem;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    vertical-align: middle;
+    display: inline-block;
+    flex-shrink: 0;
+    overflow: hidden;
+    transition:
+        filter 0.15s ease,
+        opacity 0.15s ease;
+}
+
+.nc-icon-lg {
+    width: 2.2rem;
+    height: 2.2rem;
+    max-width: none;
+    max-height: none;
+    object-fit: contain;
+    vertical-align: middle;
+    display: inline-block;
+    flex-shrink: 0;
+    overflow: visible;
+    transition:
+        filter 0.15s ease,
+        opacity 0.15s ease;
+}
+
+/* ─── White icons on solid dark/color backgrounds ─────────── */
+.btn-dark .nc-icon,
+.btn-dark .nc-icon-sm,
+.btn-dark .nc-icon-lg,
+.btn-primary .nc-icon,
+.btn-primary .nc-icon-sm,
+.btn-primary .nc-icon-lg,
+.btn-success .nc-icon,
+.btn-success .nc-icon-sm,
+.btn-success .nc-icon-lg,
+.btn-danger .nc-icon,
+.btn-danger .nc-icon-sm,
+.btn-danger .nc-icon-lg,
+.btn-warning .nc-icon,
+.btn-warning .nc-icon-sm,
+.btn-warning .nc-icon-lg,
+.btn-secondary .nc-icon,
+.btn-secondary .nc-icon-sm,
+.btn-secondary .nc-icon-lg {
+    filter: brightness(0) invert(1);
+}
+
+/* ─── White icons when outline buttons fill on hover/active ─ */
+.btn-outline-dark:is(:hover, :active, .active) .nc-icon,
+.btn-outline-dark:is(:hover, :active, .active) .nc-icon-sm,
+.btn-outline-dark:is(:hover, :active, .active) .nc-icon-lg,
+.btn-outline-primary:is(:hover, :active, .active) .nc-icon,
+.btn-outline-primary:is(:hover, :active, .active) .nc-icon-sm,
+.btn-outline-primary:is(:hover, :active, .active) .nc-icon-lg,
+.btn-outline-success:is(:hover, :active, .active) .nc-icon,
+.btn-outline-success:is(:hover, :active, .active) .nc-icon-sm,
+.btn-outline-success:is(:hover, :active, .active) .nc-icon-lg,
+.btn-outline-danger:is(:hover, :active, .active) .nc-icon,
+.btn-outline-danger:is(:hover, :active, .active) .nc-icon-sm,
+.btn-outline-danger:is(:hover, :active, .active) .nc-icon-lg,
+.btn-outline-secondary:is(:hover, :active, .active) .nc-icon,
+.btn-outline-secondary:is(:hover, :active, .active) .nc-icon-sm,
+.btn-outline-secondary:is(:hover, :active, .active) .nc-icon-lg,
+.btn-outline-warning:is(:hover, :active, .active) .nc-icon,
+.btn-outline-warning:is(:hover, :active, .active) .nc-icon-sm,
+.btn-outline-warning:is(:hover, :active, .active) .nc-icon-lg {
+    filter: brightness(0) invert(1);
+}
+
+/* ─── Subtle hover dimming on light-bg outline buttons ───── */
+.btn-outline-dark .nc-icon,
+.btn-outline-dark .nc-icon-sm,
+.btn-outline-dark .nc-icon-lg,
+.btn-outline-secondary .nc-icon,
+.btn-outline-secondary .nc-icon-sm,
+.btn-outline-secondary .nc-icon-lg {
+    opacity: 0.85;
+}
+.btn-outline-dark:hover .nc-icon,
+.btn-outline-dark:hover .nc-icon-sm,
+.btn-outline-dark:hover .nc-icon-lg,
+.btn-outline-secondary:hover .nc-icon,
+.btn-outline-secondary:hover .nc-icon-sm,
+.btn-outline-secondary:hover .nc-icon-lg {
+    opacity: 1;
+}
+
+/* ─── Icon-only buttons: square, centered, minimum tap target ─ */
+.btn:has(> .nc-icon-lg:only-child),
+.btn:has(> .nc-icon:only-child),
+.btn:has(> .nc-icon-sm:only-child) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.4rem 0.5rem;
+    min-width: 2.25rem;
+}
+
+/* btn-sm icon-only: no fixed min-height so it stretches with siblings */
+.btn.btn-sm:has(> .nc-icon-lg:only-child),
+.btn.btn-sm:has(> .nc-icon:only-child),
+.btn.btn-sm:has(> .nc-icon-sm:only-child) {
+    padding: 0.25rem 0.5rem;
+    min-width: 2rem;
+}
+
+/* ─── Buttons with icon + text: flex alignment ────────────── */
+.btn .nc-icon,
+.btn .nc-icon-sm,
+.btn .nc-icon-lg {
+    display: inline-block;
+    vertical-align: middle;
+    align-self: center;
+}
+
+/* ─── Row of mixed buttons: uniform height via stretch ────── */
+.d-flex.gap-2.align-items-stretch > .btn,
+.d-flex.gap-2.align-items-stretch > form > .btn,
+.d-flex.gap-2.align-items-stretch > .d-inline > .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* ─── Interactive States ───────────────────────────────────── */

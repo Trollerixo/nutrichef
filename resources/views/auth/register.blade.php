@@ -39,7 +39,9 @@
                         </div>
 
                         <div class="d-grid mb-3">
-                            <x-primary-button>Registrarme</x-primary-button>
+                            <x-primary-button>
+                                <img src="{{ asset('images/icons/crear_o_registrar_usuario.svg') }}" alt="" class="nc-icon me-1">Registrarme
+                            </x-primary-button>
                         </div>
                     </form>
 

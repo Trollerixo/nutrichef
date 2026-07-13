@@ -9,7 +9,7 @@
 
     <div class="card">
         <div class="card-body">
-            <form action="{{ route('admin.recetas.store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('admin.recetas.store') }}" method="POST" enctype="multipart/form-data" onsubmit="this.querySelector('button[type=submit]').classList.add('btn-loading');">
                 @csrf
 
                 <div class="row g-3 mb-3">
@@ -84,6 +84,37 @@
                     </div>
                 </div>
 
+                <div class="row g-3 mb-3">
+                    <div class="col-md-3">
+                        <label for="proteins_g" class="form-label">Proteínas (g)</label>
+                        <input id="proteins_g" name="nutrition[proteins_g]" type="number" step="0.1" min="0" class="form-control @error('nutrition.proteins_g') is-invalid @enderror" value="{{ old('nutrition.proteins_g') }}">
+                        @error('nutrition.proteins_g')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="col-md-3">
+                        <label for="carbs_g" class="form-label">Carbohidratos (g)</label>
+                        <input id="carbs_g" name="nutrition[carbs_g]" type="number" step="0.1" min="0" class="form-control @error('nutrition.carbs_g') is-invalid @enderror" value="{{ old('nutrition.carbs_g') }}">
+                        @error('nutrition.carbs_g')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="col-md-3">
+                        <label for="fats_g" class="form-label">Grasas (g)</label>
+                        <input id="fats_g" name="nutrition[fats_g]" type="number" step="0.1" min="0" class="form-control @error('nutrition.fats_g') is-invalid @enderror" value="{{ old('nutrition.fats_g') }}">
+                        @error('nutrition.fats_g')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="col-md-3">
+                        <label for="fiber_g" class="form-label">Fibra (g)</label>
+                        <input id="fiber_g" name="nutrition[fiber_g]" type="number" step="0.1" min="0" class="form-control @error('nutrition.fiber_g') is-invalid @enderror" value="{{ old('nutrition.fiber_g') }}">
+                        @error('nutrition.fiber_g')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+
                 <div class="form-check form-switch mb-4">
                     <input class="form-check-input" type="checkbox" id="published" name="published" value="1" {{ old('published') ? 'checked' : '' }}>
                     <label class="form-check-label" for="published">Publicada</label>
@@ -93,7 +124,7 @@
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="mb-0">Ingredientes</h5>
                     <button id="addIngredientRow" type="button" class="btn btn-outline-primary btn-sm">
-                        <i class="bi bi-plus-lg me-1"></i> Agregar ingrediente
+                        <img src="{{ asset('images/icons/añadir_ingredientes.svg') }}" alt="" class="nc-icon-sm me-1"> Agregar ingrediente
                     </button>
                 </div>
 
@@ -187,7 +218,9 @@
                     </div>
                 </template>
 
-                <button type="submit" class="btn btn-dark">Guardar receta</button>
+                <button type="submit" class="btn btn-dark">
+                <img src="{{ asset('images/icons/guardar_receta.svg') }}" alt="" class="nc-icon me-1">Guardar receta
+                </button>
             </form>
         </div>
     </div>

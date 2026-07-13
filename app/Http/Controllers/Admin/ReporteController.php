@@ -20,15 +20,24 @@ class ReporteController extends Controller
 {
     public function index()
     {
+        $startDate = now()->subMonths(5)->startOfMonth();
+
+        // Obtener el conteo consolidado en una sola consulta
+        $monthlyCounts = User::selectRaw('YEAR(created_at) as year, MONTH(created_at) as month, COUNT(*) as total')
+            ->where('created_at', '>=', $startDate)
+            ->groupBy('year', 'month')
+            ->get()
+            ->keyBy(fn($item) => $item->year . '-' . str_pad($item->month, 2, '0', STR_PAD_LEFT));
+
         // Usuarios registrados por mes (últimos 6 meses)
-        $usuariosPorMes = collect(range(5, 0))->map(function ($mesesAtras) {
+        $usuariosPorMes = collect(range(5, 0))->map(function ($mesesAtras) use ($monthlyCounts) {
             $fecha = now()->subMonths($mesesAtras);
+            $key = $fecha->year . '-' . str_pad($fecha->month, 2, '0', STR_PAD_LEFT);
+            $total = isset($monthlyCounts[$key]) ? $monthlyCounts[$key]->total : 0;
 
             return [
                 "mes" => $fecha->locale("es")->isoFormat("MMM"),
-                "total" => User::whereYear("created_at", $fecha->year)
-                    ->whereMonth("created_at", $fecha->month)
-                    ->count(),
+                "total" => $total,
             ];
         });
 
@@ -46,14 +55,23 @@ class ReporteController extends Controller
 
     public function export(string $format)
     {
-        $usuariosPorMes = collect(range(5, 0))->map(function ($mesesAtras) {
+        $startDate = now()->subMonths(5)->startOfMonth();
+
+        // Obtener el conteo consolidado en una sola consulta
+        $monthlyCounts = User::selectRaw('YEAR(created_at) as year, MONTH(created_at) as month, COUNT(*) as total')
+            ->where('created_at', '>=', $startDate)
+            ->groupBy('year', 'month')
+            ->get()
+            ->keyBy(fn($item) => $item->year . '-' . str_pad($item->month, 2, '0', STR_PAD_LEFT));
+
+        $usuariosPorMes = collect(range(5, 0))->map(function ($mesesAtras) use ($monthlyCounts) {
             $fecha = now()->subMonths($mesesAtras);
+            $key = $fecha->year . '-' . str_pad($fecha->month, 2, '0', STR_PAD_LEFT);
+            $total = isset($monthlyCounts[$key]) ? $monthlyCounts[$key]->total : 0;
 
             return [
                 'mes' => $fecha->locale('es')->isoFormat('MMM'),
-                'total' => User::whereYear('created_at', $fecha->year)
-                    ->whereMonth('created_at', $fecha->month)
-                    ->count(),
+                'total' => $total,
             ];
         });
 
