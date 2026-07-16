@@ -7,6 +7,12 @@
     <title>NutriChef{{ isset($title) ? ' — '.$title : '' }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('head')
+    <script>
+        (function () {
+            const savedScale = localStorage.getItem('nc-font-scale') || '100';
+            document.documentElement.style.fontSize = savedScale + '%';
+        })();
+    </script>
 </head>
 <body class="bg-light">
     <x-toast />
@@ -140,5 +146,6 @@
     </script>
 
     @stack('scripts')
+    <x-accessibility-widget />
 </body>
 </html>
