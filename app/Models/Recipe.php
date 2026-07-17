@@ -125,11 +125,16 @@ class Recipe extends Model
     public function getImageUrlAttribute(): ?string
     {
         if (!$this->image) {
-            return null;
+            return "https://picsum.photos/seed/" . ($this->slug ?? 'recipe') . "/1200/800";
         }
 
-        if (preg_match('/^https?:\\/\\//i', $this->image)) {
+        if (preg_match('/^https?:\/\//i', $this->image)) {
             return $this->image;
+        }
+
+        // Fallback si el archivo físico no existe en el almacenamiento (típico en la nube con discos efímeros)
+        if (!Storage::disk('public')->exists($this->image)) {
+            return "https://picsum.photos/seed/" . ($this->slug ?? 'recipe') . "/1200/800";
         }
 
         return Storage::disk('public')->url($this->image);
