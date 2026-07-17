@@ -95,11 +95,82 @@
 
         <div class="col-lg-7">
             <div class="card h-100">
-                <div class="card-body">
-                    <h2 class="fw-bold">Pasos de Preparación</h2>
-                    <ol class="mt-4">
-                        @forelse ($recipe->steps as $step)
-                            <li class="mb-3">
+                <div class="card-body" x-data="recipeVoicePlayer()" @unload.window="stop()">
+                    <div class="d-flex align-items-center gap-3 mb-4 flex-wrap">
+                        <h2 class="fw-bold mb-0">Pasos de Preparación</h2>
+                        
+                        <!-- Botón Dictado Activable -->
+                        <button @click="open = !open" 
+                                class="btn btn-outline-dark btn-sm d-flex align-items-center gap-2"
+                                :class="open ? 'active' : ''"
+                                aria-label="Controles de lectura por voz"
+                                :aria-expanded="open.toString()">
+                            <i class="bi bi-volume-up-fill fs-5"></i>
+                            <span class="small fw-semibold">Escuchar</span>
+                        </button>
+                    </div>
+
+                    <!-- Mini Menú de Controles Dictado -->
+                    <div x-show="open" x-transition style="display: none;">
+                        <div class="p-3 mb-4 bg-light rounded border border-light-subtle d-flex flex-wrap align-items-center gap-3 justify-content-between">
+                            <!-- Acciones Principales -->
+                            <div class="d-flex align-items-center gap-2">
+                                <!-- Play/Pause -->
+                                <button @click="isPlaying && !isPaused ? pause() : play()" 
+                                        class="btn btn-dark btn-sm d-flex align-items-center justify-content-center p-2 rounded-circle"
+                                        style="width: 36px; height: 36px;"
+                                        :title="isPlaying && !isPaused ? 'Pausar' : 'Reproducir'"
+                                        :aria-label="isPlaying && !isPaused ? 'Pausar' : 'Reproducir'">
+                                    <i class="bi" :class="isPlaying && !isPaused ? 'bi-pause-fill' : 'bi-play-fill'"></i>
+                                </button>
+                                
+                                <!-- Stop -->
+                                <button @click="stop()" 
+                                        class="btn btn-outline-dark btn-sm d-flex align-items-center justify-content-center p-2 rounded-circle"
+                                        style="width: 36px; height: 36px;"
+                                        title="Detener"
+                                        aria-label="Detener reproducción"
+                                        :disabled="!isPlaying">
+                                    <i class="bi bi-stop-fill"></i>
+                                </button>
+                            </div>
+
+                            <!-- Navegación Temporal (-5s / +5s) -->
+                            <div class="d-flex align-items-center gap-2">
+                                <!-- Retroceder 5s -->
+                                <button @click="skipSeconds(-5)" 
+                                        class="btn btn-outline-secondary btn-sm px-2 py-1"
+                                        title="Retroceder 5 segundos"
+                                        aria-label="Retroceder 5 segundos"
+                                        :disabled="!isPlaying">
+                                    <i class="bi bi-arrow-left-short me-1"></i>-5s
+                                </button>
+
+                                <!-- Avanzar 5s -->
+                                <button @click="skipSeconds(5)" 
+                                        class="btn btn-outline-secondary btn-sm px-2 py-1"
+                                        title="Avanzar 5 segundos"
+                                        aria-label="Avanzar 5 segundos"
+                                        :disabled="!isPlaying">
+                                    +5s<i class="bi bi-arrow-right-short ms-1"></i>
+                                </button>
+                            </div>
+
+                            <!-- Control de Velocidad -->
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="small text-muted me-1">Velocidad:</span>
+                                <button @click="changeRate(-0.1)" class="btn btn-light btn-sm border py-0 px-2" title="Disminuir velocidad" aria-label="Disminuir velocidad">-</button>
+                                <span class="small font-monospace fw-semibold" style="min-width: 32px; text-align: center;" x-text="rate.toFixed(1) + 'x'"></span>
+                                <button @click="changeRate(0.1)" class="btn btn-light btn-sm border py-0 px-2" title="Aumentar velocidad" aria-label="Aumentar velocidad">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <ol class="mt-4" style="padding-left: 1.25rem;">
+                        @forelse ($recipe->steps as $index => $step)
+                            <li class="mb-3 p-2 rounded transition-all"
+                                :class="isPlaying && currentStepIndex === {{ $index }} ? 'bg-success-subtle border-start border-success border-3 ps-3' : ''"
+                                style="transition: all 0.3s ease;">
                                 <p class="mb-1 fw-semibold">Paso {{ $step->step_number }}</p>
                                 <p class="text-muted mb-0">{{ $step->instruction }}</p>
                             </li>
@@ -348,6 +419,116 @@
             });
         }
     });
+
+    function recipeVoicePlayer() {
+        return {
+            open: false,
+            isPlaying: false,
+            isPaused: false,
+            rate: 1.0,
+            currentStepIndex: 0,
+            charIndex: 0,
+            cancelling: false,
+            steps: @json($recipe->steps->sortBy('step_number')->map(fn($s) => 'Paso ' . $s->step_number . ': ' . $s->instruction)->toArray()),
+            
+            speakCurrent() {
+                window.speechSynthesis.cancel();
+                if (this.currentStepIndex >= this.steps.length) {
+                    this.stop();
+                    return;
+                }
+                
+                const fullText = this.steps[this.currentStepIndex];
+                const textToSpeak = fullText.substring(this.charIndex);
+                const u = new SpeechSynthesisUtterance(textToSpeak);
+                u.lang = 'es-ES';
+                u.rate = this.rate;
+                
+                u.onboundary = (e) => {
+                    if (e.name === 'word') {
+                        this.charIndex = e.charIndex;
+                    }
+                };
+                
+                u.onend = () => {
+                    if (this.isPlaying && !this.isPaused && !this.cancelling) {
+                        this.currentStepIndex++;
+                        this.charIndex = 0;
+                        this.speakCurrent();
+                    }
+                };
+                
+                window.speechSynthesis.speak(u);
+            },
+            
+            play() {
+                if (this.isPaused) {
+                    window.speechSynthesis.resume();
+                    this.isPaused = false;
+                    return;
+                }
+                this.isPlaying = true;
+                this.isPaused = false;
+                this.currentStepIndex = 0;
+                this.charIndex = 0;
+                this.speakCurrent();
+            },
+            
+            pause() {
+                window.speechSynthesis.pause();
+                this.isPaused = true;
+            },
+            
+            stop() {
+                window.speechSynthesis.cancel();
+                this.isPlaying = false;
+                this.isPaused = false;
+                this.currentStepIndex = 0;
+                this.charIndex = 0;
+            },
+            
+            changeRate(delta) {
+                this.rate = Math.min(2.0, Math.max(0.5, parseFloat((this.rate + delta).toFixed(1))));
+                if (this.isPlaying && !this.isPaused) {
+                    this.cancelling = true;
+                    this.speakCurrent();
+                    this.$nextTick(() => { this.cancelling = false; });
+                }
+            },
+            
+            skipSeconds(seconds) {
+                const charDelta = Math.round(seconds * 12 * this.rate);
+                let targetIndex = this.charIndex + charDelta;
+                const currentText = this.steps[this.currentStepIndex];
+                
+                if (targetIndex >= currentText.length) {
+                    if (this.currentStepIndex < this.steps.length - 1) {
+                        this.currentStepIndex++;
+                        this.charIndex = 0;
+                    } else {
+                        this.stop();
+                        return;
+                    }
+                } else if (targetIndex < 0) {
+                    if (this.currentStepIndex > 0) {
+                        this.currentStepIndex--;
+                        const prevText = this.steps[this.currentStepIndex];
+                        this.charIndex = Math.max(0, prevText.length + targetIndex);
+                    } else {
+                        this.charIndex = 0;
+                    }
+                } else {
+                    this.charIndex = targetIndex;
+                }
+                
+                if (this.isPlaying && !this.isPaused) {
+                    this.cancelling = true;
+                    this.speakCurrent();
+                    this.$nextTick(() => { this.cancelling = false; });
+                }
+            }
+        };
+    }
 </script>
 @endpush
 </x-public-layout>

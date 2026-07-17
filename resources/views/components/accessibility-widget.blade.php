@@ -16,7 +16,12 @@
             :aria-expanded="open.toString()" 
             aria-label="Ajustar tamaño de fuente de la página"
             title="Ajustar tamaño de fuente">
-        <i class="bi bi-type-size"></i>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display: block;">
+            <path d="M4 19L10 5L16 19"></path>
+            <path d="M6 15H14"></path>
+            <path d="M18 10V16"></path>
+            <path d="M15 13H21"></path>
+        </svg>
     </button>
 
     <!-- Panel de Control Deslizante (Tipo Volumen) -->

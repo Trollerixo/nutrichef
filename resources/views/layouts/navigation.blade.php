@@ -96,10 +96,14 @@
             <a href="{{ route('shopping.index') }}" class="nav-link {{ request()->routeIs('shopping.*') ? 'active' : '' }}"><i class="bi bi-cart3 me-2"></i>Lista de compras</a>
         </li>
         <li class="nav-item">
-            <a href="{{ route('weekly-menus.index') }}" class="nav-link {{ request()->routeIs('weekly-menus.*') ? 'active' : '' }}"><i class="bi bi-calendar-week me-2"></i>Menú semanal</a>
+            <a href="{{ route('weekly-menus.index') }}" class="nav-link {{ request()->routeIs('weekly-menus.*') ? 'active' : '' }} d-flex align-items-center">
+                <img src="{{ asset('images/icons/menu_semanal.svg') }}" alt="" class="nc-icon-sm me-2 nc-sidebar-icon">Menú semanal
+            </a>
         </li>
         <li class="nav-item">
-            <a href="{{ route('history.index') }}" class="nav-link {{ request()->routeIs('history.*') ? 'active' : '' }}"><i class="bi bi-clock-history me-2"></i>Historial</a>
+            <a href="{{ route('history.index') }}" class="nav-link {{ request()->routeIs('history.*') ? 'active' : '' }} d-flex align-items-center">
+                <img src="{{ asset('images/icons/historial.svg') }}" alt="" class="nc-icon-sm me-2 nc-sidebar-icon">Historial
+            </a>
         </li>
         <li class="nav-item">
             <a href="{{ route('messages.index') }}" class="nav-link {{ request()->routeIs('messages.*') ? 'active' : '' }}"><i class="bi bi-chat me-2"></i>Mensajes</a>

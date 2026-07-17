@@ -5,7 +5,7 @@
             <p class="text-muted mb-0">Recetas guardadas para volver cuando quieras.</p>
         </div>
         <a href="{{ route('recipes.index') }}" class="btn btn-dark btn-sm">
-            <i class="bi bi-search me-1"></i> Buscar más
+            <img src="{{ asset('images/icons/buscar_receta.svg') }}" alt="" class="nc-icon-sm me-1"> Buscar más
         </a>
     </div>
 

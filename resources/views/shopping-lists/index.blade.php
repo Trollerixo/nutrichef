@@ -58,17 +58,36 @@
                         </template>
                     </div>
                     <div class="d-flex gap-2">
-                        <button class="btn btn-outline-dark btn-sm" @click="adding = !adding">
-                            <i class="bi bi-plus-lg me-1"></i> Ítem
+                        <!-- Botón Agregar Ítem (Icono) -->
+                        <button type="button" 
+                                class="btn d-flex align-items-center justify-content-center"
+                                :class="adding ? 'btn-success text-white' : 'btn-outline-success'"
+                                @click="adding = !adding" 
+                                style="width: 42px; height: 42px; padding: 0;"
+                                title="Añadir ítem" 
+                                aria-label="Añadir ítem a la lista">
+                            <img src="{{ asset('images/icons/añadir_ingredientes.svg') }}" alt="" class="nc-icon" :style="adding ? 'filter: brightness(0) invert(1);' : ''">
                         </button>
-                        <button type="button" class="btn btn-outline-dark btn-sm js-download-list" title="Descargar lista como texto" aria-label="Descargar lista"
+
+                        <!-- Botón Descargar Lista (Icono) -->
+                        <button type="button" 
+                                class="btn btn-outline-dark d-flex align-items-center justify-content-center js-download-list" 
+                                style="width: 42px; height: 42px; padding: 0;"
+                                title="Descargar lista como texto" 
+                                aria-label="Descargar lista"
                                 data-title="{{ $list->title }}"
                                 data-items='@json($list->items->map(fn($item) => ["name" => $item->name, "quantity" => $item->quantity]))'>
-                            <img src="{{ asset('images/icons/descargar_lista_de_compras.svg') }}" alt="" class="nc-icon-lg">
+                            <img src="{{ asset('images/icons/descargar_lista_de_compras.svg') }}" alt="" class="nc-icon">
                         </button>
-                        <button type="button" class="btn btn-outline-danger btn-sm"
-                                @click="triggerDelete('{{ route('shopping.destroy', $list) }}', '¿Eliminar lista?', 'Se borrará la lista \'{{ $list->title }}\' y todos sus productos.')">
-                            <i class="bi bi-trash"></i>
+
+                        <!-- Botón Eliminar Lista (Icono) -->
+                        <button type="button" 
+                                class="btn btn-outline-danger d-flex align-items-center justify-content-center"
+                                style="width: 42px; height: 42px; padding: 0;"
+                                @click="triggerDelete('{{ route('shopping.destroy', $list) }}', '¿Eliminar lista?', 'Se borrará la lista \'{{ $list->title }}\' y todos sus productos.')"
+                                title="Eliminar lista"
+                                aria-label="Eliminar lista">
+                            <img src="{{ asset('images/icons/eliminar_receta.svg') }}" alt="" class="nc-icon" style="width: 1.25rem; height: 1.25rem;">
                         </button>
                     </div>
                 </div>

@@ -95,6 +95,17 @@ body {
     font-size: 1.1rem;
 }
 
+.nc-sidebar .nav-link .nc-sidebar-icon {
+    opacity: 0.75;
+    transition: all 0.2s ease;
+}
+
+.nc-sidebar .nav-link:hover .nc-sidebar-icon,
+.nc-sidebar .nav-link.active .nc-sidebar-icon {
+    opacity: 1;
+    filter: invert(36%) sepia(31%) saturate(996%) hue-rotate(102deg) brightness(91%) contrast(85%);
+}
+
 /* ─── Toasts & Alerts ──────────────────────────────────────── */
 
 .toast-container {
@@ -457,10 +468,17 @@ body {
     z-index: 1050;
 }
 
+/* Evitar que el escalado de fuente del HTML afecte a los controles del widget */
+.nc-accessibility-widget,
+.nc-accessibility-widget * {
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+}
+
 .nc-accessibility-btn {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
+    width: 48px !important;
+    height: 48px !important;
+    border-radius: 50% !important;
     background-color: var(--nc-primary);
     color: #fff;
     border: none;
@@ -478,28 +496,57 @@ body {
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
 }
 
-.nc-accessibility-btn i {
-    font-size: 1.4rem;
+.nc-accessibility-btn svg {
+    width: 20px !important;
+    height: 20px !important;
+    stroke: currentColor;
 }
 
 .nc-accessibility-panel {
     position: absolute;
     bottom: 60px;
     right: 0;
-    width: 260px;
+    width: 260px !important;
     background: #fff;
-    padding: 1rem;
-    border-radius: 12px;
+    padding: 16px !important;
+    border-radius: 12px !important;
     z-index: 1060;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+}
+
+.nc-accessibility-panel .badge {
+    font-size: 11px !important;
+    padding: 4px 8px !important;
+    border-radius: 4px !important;
+    line-height: 1 !important;
+}
+
+.nc-accessibility-panel .btn {
+    font-size: 12px !important;
+    padding: 4px 8px !important;
+    border-radius: 4px !important;
+    line-height: 1.4 !important;
+}
+
+.nc-accessibility-panel input[type="range"] {
+    height: 6px !important;
+    margin: 0 !important;
 }
 
 .nc-accessibility-panel input[type="range"]::-webkit-slider-runnable-track {
     background: #e9ecef;
     border-radius: 3px;
+    height: 6px;
 }
 
 .nc-accessibility-panel input[type="range"]::-webkit-slider-thumb {
     background-color: var(--nc-primary);
+    margin-top: -5px; /* Centrar slider thumb */
+}
+
+.nc-accessibility-panel hr {
+    margin: 8px 0 !important;
+    border-color: #dee2e6 !important;
+    opacity: 1 !important;
 }
 
