@@ -137,7 +137,7 @@ class Recipe extends Model
             return "https://picsum.photos/seed/" . ($this->slug ?? 'recipe') . "/1200/800";
         }
 
-        return Storage::disk('public')->url($this->image);
+        return asset('storage/' . $this->image);
     }
 
     public function getRouteKeyName(): string
