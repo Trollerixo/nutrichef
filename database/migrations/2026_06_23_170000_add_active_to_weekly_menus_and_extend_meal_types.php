@@ -25,7 +25,10 @@ return new class extends Migration
             $table->foreign('recipe_id')->references('id')->on('recipes')->cascadeOnDelete();
         });
 
-        if (DB::getDriverName() !== 'sqlite') {
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement("ALTER TABLE menu_slots DROP CONSTRAINT IF EXISTS menu_slots_meal_type_check");
+            DB::statement("ALTER TABLE menu_slots ADD CONSTRAINT menu_slots_meal_type_check CHECK (meal_type IN ('desayuno', 'almuerzo', 'cena', 'postre', 'piqueo'))");
+        } elseif (DB::getDriverName() === 'mysql') {
             DB::statement("ALTER TABLE menu_slots MODIFY COLUMN meal_type ENUM('desayuno', 'almuerzo', 'cena', 'postre', 'piqueo') NOT NULL");
         }
     }
@@ -42,7 +45,10 @@ return new class extends Migration
             $table->foreign('recipe_id')->references('id')->on('recipes')->cascadeOnDelete();
         });
 
-        if (DB::getDriverName() !== 'sqlite') {
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement("ALTER TABLE menu_slots DROP CONSTRAINT IF EXISTS menu_slots_meal_type_check");
+            DB::statement("ALTER TABLE menu_slots ADD CONSTRAINT menu_slots_meal_type_check CHECK (meal_type IN ('desayuno', 'almuerzo', 'cena'))");
+        } elseif (DB::getDriverName() === 'mysql') {
             DB::statement("ALTER TABLE menu_slots MODIFY COLUMN meal_type ENUM('desayuno', 'almuerzo', 'cena') NOT NULL");
         }
 
