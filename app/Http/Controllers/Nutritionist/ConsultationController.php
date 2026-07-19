@@ -26,6 +26,8 @@ class ConsultationController extends Controller
 
         $consultation->load(['patient', 'messages.sender']);
 
+        \Illuminate\Support\Facades\Cache::put("user-active-chat:" . auth()->id(), $consultation->id, now()->addSeconds(45));
+
         return view('nutritionist.consultations.show', compact('consultation'));
     }
 
@@ -34,6 +36,8 @@ class ConsultationController extends Controller
         abort_if($consultation->nutritionist_id !== auth()->id(), 403);
 
         $patient = $consultation->patient;
+
+        \Illuminate\Support\Facades\Cache::put("user-active-chat:" . auth()->id(), $consultation->id, now()->addSeconds(45));
 
         return response()->json([
             'online' => $patient?->isOnline() ?? false,
@@ -55,6 +59,23 @@ class ConsultationController extends Controller
             'sent_at' => now(),
             'read' => false,
         ]);
+
+        // Send notification to patient if not active in this chat
+        $recipientId = $consultation->patient_id;
+        $isRecipientActive = \Illuminate\Support\Facades\Cache::get("user-active-chat:{$recipientId}") === $consultation->id;
+        if (!$isRecipientActive) {
+            $notification = \App\Models\Notification::create([
+                'sent_by' => auth()->id(),
+                'title' => 'Nuevo mensaje de tu nutricionista',
+                'message' => auth()->user()->name . ': ' . \Illuminate\Support\Str::limit($message->body, 100),
+                'target' => 'messages',
+                'sent_at' => now(),
+            ]);
+            $notification->notificationUsers()->create([
+                'user_id' => $recipientId,
+                'read' => false,
+            ]);
+        }
 
         if ($consultation->status === 'open') {
             $consultation->update(['status' => 'in_progress']);

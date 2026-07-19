@@ -22,8 +22,12 @@ class ReporteController extends Controller
     {
         $startDate = now()->subMonths(5)->startOfMonth();
 
+        $selectRaw = \Illuminate\Support\Facades\DB::getDriverName() === 'pgsql'
+            ? 'EXTRACT(YEAR FROM created_at) as year, EXTRACT(MONTH FROM created_at) as month, COUNT(*) as total'
+            : 'YEAR(created_at) as year, MONTH(created_at) as month, COUNT(*) as total';
+
         // Obtener el conteo consolidado en una sola consulta
-        $monthlyCounts = User::selectRaw('YEAR(created_at) as year, MONTH(created_at) as month, COUNT(*) as total')
+        $monthlyCounts = User::selectRaw($selectRaw)
             ->where('created_at', '>=', $startDate)
             ->groupBy('year', 'month')
             ->get()
@@ -57,8 +61,12 @@ class ReporteController extends Controller
     {
         $startDate = now()->subMonths(5)->startOfMonth();
 
+        $selectRaw = \Illuminate\Support\Facades\DB::getDriverName() === 'pgsql'
+            ? 'EXTRACT(YEAR FROM created_at) as year, EXTRACT(MONTH FROM created_at) as month, COUNT(*) as total'
+            : 'YEAR(created_at) as year, MONTH(created_at) as month, COUNT(*) as total';
+
         // Obtener el conteo consolidado en una sola consulta
-        $monthlyCounts = User::selectRaw('YEAR(created_at) as year, MONTH(created_at) as month, COUNT(*) as total')
+        $monthlyCounts = User::selectRaw($selectRaw)
             ->where('created_at', '>=', $startDate)
             ->groupBy('year', 'month')
             ->get()

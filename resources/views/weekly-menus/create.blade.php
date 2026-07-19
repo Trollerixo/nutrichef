@@ -76,6 +76,7 @@
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">Receta</label>
+                                <input type="text" class="form-control form-control-sm mb-1 recipe-search" placeholder="Buscar receta..." title="Filtrar recetas">
                                 <select data-slot-field="recipe_id" name="slots[{{ $index }}][recipe_id]" class="form-select @error('slots.'.$index.'.recipe_id') is-invalid @enderror">
                                     <option value="">Selecciona una receta</option>
                                     @foreach($recipes as $recipe)
@@ -119,6 +120,7 @@
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Receta</label>
+                            <input type="text" class="form-control form-control-sm mb-1 recipe-search" placeholder="Buscar receta..." title="Filtrar recetas">
                             <select data-slot-field="recipe_id" class="form-select">
                                 <option value="">Selecciona una receta</option>
                                 @foreach($recipes as $recipe)
@@ -186,6 +188,26 @@
                 if (row) {
                     row.remove();
                     refreshSlotNames();
+                }
+            }
+        });
+
+        slotsContainer.addEventListener('input', event => {
+            if (event.target.matches('.recipe-search')) {
+                const query = event.target.value.toLowerCase();
+                const select = event.target.nextElementSibling;
+                if (select && select.matches('select')) {
+                    Array.from(select.options).forEach(opt => {
+                        if (opt.value === '') return;
+                        const text = opt.textContent.toLowerCase();
+                        if (text.includes(query)) {
+                            opt.style.display = '';
+                            opt.disabled = false;
+                        } else {
+                            opt.style.display = 'none';
+                            opt.disabled = true;
+                        }
+                    });
                 }
             }
         });

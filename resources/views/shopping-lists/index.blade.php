@@ -20,7 +20,7 @@
                 <div class="row g-3 align-items-end">
                     <div class="col-sm-8">
                         <label class="form-label fw-semibold" for="title">Nueva lista</label>
-                        <input id="title" name="title" class="form-control" value="Lista de compras" placeholder="Título de la lista (ej. Compras Semanales)">
+                        <input id="title" name="title" class="form-control" placeholder="Título de la lista (ej. Compras Semanales)">
                     </div>
                     <div class="col-sm-4 d-grid">
                         <button type="submit" class="btn btn-dark">
@@ -58,14 +58,14 @@
                         </template>
                     </div>
                     <div class="d-flex gap-2">
-                        <!-- Botón Agregar Ítem (Icono) -->
+                        <!-- Botón Agregar Ingrediente (Icono) -->
                         <button type="button" 
                                 class="btn d-flex align-items-center justify-content-center"
                                 :class="adding ? 'btn-success text-white' : 'btn-outline-success'"
                                 @click="adding = !adding" 
                                 style="width: 42px; height: 42px; padding: 0;"
-                                title="Añadir ítem" 
-                                aria-label="Añadir ítem a la lista">
+                                title="Añadir ingrediente" 
+                                aria-label="Añadir ingrediente a la lista">
                             <img src="{{ asset('images/icons/añadir_ingredientes.svg') }}" alt="" class="nc-icon" :style="adding ? 'filter: brightness(0) invert(1);' : ''">
                         </button>
 
@@ -92,13 +92,13 @@
                     </div>
                 </div>
 
-                {{-- Formulario para agregar ítem manual --}}
+                {{-- Formulario para agregar ingrediente manual --}}
                 <div x-show="adding" class="mt-3 p-3 bg-light rounded border" x-cloak>
                     <form action="{{ route('shopping.items.add', $list) }}" method="POST">
                         @csrf
                         <div class="row g-2 align-items-end">
                             <div class="col-md-6">
-                                <label class="small fw-semibold">Nombre del producto</label>
+                                <label class="small fw-semibold">Nombre del ingrediente</label>
                                 <input type="text" name="name" class="form-control form-control-sm" placeholder="Ej: Arroz" required>
                             </div>
                             <div class="col-md-4">
@@ -115,7 +115,7 @@
             <div class="card-body p-0">
                 @if ($list->items->isEmpty())
                     <div class="p-4 text-center">
-                        <p class="text-muted mb-0">Esta lista está vacía. Agrega ítems manualmente o desde las recetas.</p>
+                        <p class="text-muted mb-0">Esta lista está vacía. Agrega ingredientes manualmente o desde las recetas.</p>
                     </div>
                 @else
                     <ul class="list-group list-group-flush">
@@ -150,8 +150,8 @@
                                     </div>
                                 </div>
                                 <div class="d-flex gap-2">
-                                    <button type="button" class="btn btn-link text-danger p-0" title="Eliminar ítem"
-                                            @click="triggerDelete('{{ route('shopping.items.destroy', $item) }}', '¿Eliminar ítem?', '¿Estás seguro de que deseas quitar \'{{ $item->name }}\' de la lista?')">
+                                    <button type="button" class="btn btn-link text-danger p-0" title="Eliminar ingrediente"
+                                            @click="triggerDelete('{{ route('shopping.items.destroy', $item) }}', '¿Eliminar ingrediente?', '¿Estás seguro de que deseas quitar \'{{ $item->name }}\' de la lista?')">
                                         <i class="bi bi-x-circle fs-5"></i>
                                     </button>
                                 </div>

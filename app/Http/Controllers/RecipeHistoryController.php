@@ -15,7 +15,8 @@ class RecipeHistoryController extends Controller
             ->select('recipe_id')
             ->selectRaw('MAX(occurred_at) as last_seen')
             ->groupBy('recipe_id')
-            ->orderByDesc('last_seen')
+            ->reorder()
+            ->orderByRaw('MAX(occurred_at) DESC')
             ->paginate(15);
 
         // 2. Fetch the full detailed history entries only for the recipes on the current page

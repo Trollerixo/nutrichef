@@ -22,30 +22,32 @@
                 <div class="col-md-6" style="animation-delay: 0.2s">
                     <div class="position-relative">
                         @if($featuredRecipe)
-                            <div class="rounded-circle shadow-sm mx-auto overflow-hidden"
-                                 style="width:400px; height:400px; background: linear-gradient(135deg, #d8f3dc 0%, #b7e4c7 100%) !important;">
-                                @if($featuredRecipe->image_url)
-                                    <img src="{{ $featuredRecipe->image_url }}" alt="{{ $featuredRecipe->title }}" class="w-100 h-100" style="object-fit: cover;">
-                                @else
-                                    <div class="d-flex align-items-center justify-content-center w-100 h-100">
-                                        <span class="display-1">🥗</span>
-                                    </div>
-                                @endif
-                            </div>
-                            <div class="card shadow-lg border-0 position-absolute nc-card-hover"
-                                 style="bottom:2rem; left:-1rem; width:240px; border-radius: 15px;">
-                                <div class="card-body p-3">
-                                    <div class="d-flex align-items-center gap-2 mb-2">
-                                        <div class="nc-badge" style="font-size: 0.6rem;">De la semana</div>
-                                        <div class="text-warning small"><i class="bi bi-star-fill"></i> {{ number_format($featuredRecipe->rating_avg, 1) }}</div>
-                                    </div>
-                                    <p class="fw-bold mb-1 small">{{ $featuredRecipe->title }}</p>
-                                    <div class="text-muted small" style="font-size: 0.7rem;">
-                                        <i class="bi bi-clock"></i> {{ $featuredRecipe->prep_time_min ?? '-' }} min ·
-                                        <i class="bi bi-droplet"></i> {{ $featuredRecipe->calories ?? '-' }} kcal
+                            <a href="{{ route('recipes.show', $featuredRecipe) }}" class="text-decoration-none text-dark d-block position-relative nc-card-hover">
+                                <div class="rounded-circle shadow-sm mx-auto overflow-hidden"
+                                     style="width:400px; height:400px; background: linear-gradient(135deg, #d8f3dc 0%, #b7e4c7 100%) !important;">
+                                    @if($featuredRecipe->image_url)
+                                        <img src="{{ $featuredRecipe->image_url }}" alt="{{ $featuredRecipe->title }}" class="w-100 h-100" style="object-fit: cover;">
+                                    @else
+                                        <div class="d-flex align-items-center justify-content-center w-100 h-100">
+                                            <span class="display-1">🥗</span>
+                                        </div>
+                                    @endif
+                                </div>
+                                <div class="card shadow-lg border-0 position-absolute"
+                                     style="bottom:2rem; left:-1rem; width:240px; border-radius: 15px;">
+                                    <div class="card-body p-3">
+                                        <div class="d-flex align-items-center gap-2 mb-2">
+                                            <div class="nc-badge" style="font-size: 0.6rem;">De la semana</div>
+                                            <div class="text-warning small"><i class="bi bi-star-fill"></i> {{ number_format($featuredRecipe->rating_avg, 1) }}</div>
+                                        </div>
+                                        <p class="fw-bold mb-1 small">{{ $featuredRecipe->title }}</p>
+                                        <div class="text-muted small" style="font-size: 0.7rem;">
+                                            <i class="bi bi-clock"></i> {{ $featuredRecipe->prep_time_min ?? '-' }} min ·
+                                            <i class="bi bi-droplet"></i> {{ $featuredRecipe->calories ?? '-' }} kcal
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            </a>
                         @else
                             <div class="bg-light rounded-circle shadow-sm d-flex align-items-center justify-content-center mx-auto"
                                  style="width:400px; height:400px; background: linear-gradient(135deg, #d8f3dc 0%, #b7e4c7 100%) !important;">

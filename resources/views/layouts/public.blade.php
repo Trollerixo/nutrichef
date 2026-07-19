@@ -44,13 +44,13 @@
                                 </div>
                                 <div x-show="loading" class="text-center py-4 text-muted small">Cargando...</div>
                                 <template x-for="item in items" :key="item.id">
-                                    <div class="dropdown-item border-bottom px-3 py-2" :class="item.read ? '' : 'bg-light'">
+                                    <div class="dropdown-item border-bottom px-3 py-2" :class="item.read ? '' : 'bg-light'" style="white-space: normal !important;">
                                         <div class="d-flex justify-content-between align-items-start gap-2">
-                                            <div class="min-w-0">
+                                            <a :href="item.target === 'messages' ? '{{ auth()->user() && auth()->user()->isNutritionist() ? route('nutritionist.consultations.index') : route('messages.index') }}' : (item.target === 'recommendations' ? '{{ route('recommendations.index') }}' : '{{ route('notifications.index') }}')" class="text-decoration-none text-dark min-w-0 flex-grow-1 d-block">
                                                 <div class="small fw-semibold text-truncate" x-text="item.title"></div>
                                                 <div class="text-muted" style="font-size: 0.7rem;" x-text="item.message"></div>
                                                 <div class="text-muted" style="font-size: 0.65rem;" x-text="item.time"></div>
-                                            </div>
+                                            </a>
                                             <button x-show="!item.read" @click="markRead(item.id)" class="btn btn-link p-0 text-primary flex-shrink-0" title="Marcar leída">
                                                 <i class="bi bi-check"></i>
                                             </button>
@@ -117,40 +117,51 @@
                 'read' => (bool) $n->pivot?->read,
             ]);
         @endphp
-        <script id="pub-bell-data" type="application/json">@json($pubBellData)</script>
-    @endauth
-
+        <script id="bell-data" type="application/json">@json($pubBellData)</script>
     <script>
     function publicNotificationBell() {
         const readBase = '{{ url('/notificaciones') }}/';
         return {
             open: false,
-            unread: {{ auth()->check() ? $pubBellUnread : 0 }},
-            items: JSON.parse(document.getElementById('pub-bell-data')?.textContent || '[]'),
+            unread: {{ $pubBellUnread }},
+            items: JSON.parse(document.getElementById('bell-data').textContent),
+            init() {
+                setInterval(() => {
+                    fetch('{{ route('notifications.recent') }}', {
+                        headers: { 'Accept': 'application/json' }
+                    })
+                    .then(r => r.json())
+                    .then(data => {
+                        this.unread = data.unread;
+                        this.items = data.items;
+                    });
+                }, 15000);
+            },
             toggle() {
                 this.open = !this.open;
             },
-            markRead(id) {
-                fetch(readBase + id + '/leer', {
-                    method: 'POST',
-                    headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content, 'Accept': 'application/json' },
-                }).then(r => r.json()).then(() => {
-                    this.items = this.items.filter(i => i.id !== id);
-                    this.unread = Math.max(0, this.unread - 1);
-                });
-            },
-            markAllRead() {
-                fetch(readBase + 'leer-todas', {
-                    method: 'POST',
-                    headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content, 'Accept': 'application/json' },
-                }).then(r => r.json()).then(() => {
-                    this.items = [];
-                    this.unread = 0;
-                });
-            },
-        };
+                markRead(id) {
+                    fetch(readBase + id + '/leer', {
+                        method: 'POST',
+                        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content, 'Accept': 'application/json' },
+                    }).then(r => r.json()).then(() => {
+                        this.items = this.items.filter(i => i.id !== id);
+                        this.unread = Math.max(0, this.unread - 1);
+                    });
+                },
+                markAllRead() {
+                    fetch(readBase + 'leer-todas', {
+                        method: 'POST',
+                        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content, 'Accept': 'application/json' },
+                    }).then(r => r.json()).then(() => {
+                        this.items = [];
+                        this.unread = 0;
+                    });
+                },
+            };
     }
     </script>
+    @endauth
 
     @stack('scripts')
     <x-accessibility-widget />

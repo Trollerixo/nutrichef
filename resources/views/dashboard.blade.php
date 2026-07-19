@@ -207,13 +207,73 @@
 
     @else
         {{-- Admin Dashboard --}}
-        <div class="card border-0 shadow-sm p-5 text-center bg-white">
-            <div class="nc-img-placeholder mb-4" style="height: 100px; background: none;">🛡️</div>
-            <h4 class="fw-bold">Panel Administrativo</h4>
-            <p class="text-muted mx-auto" style="max-width: 500px;">Control total del sistema NutriChef. Gestiona usuarios, categorías, recetas y reportes estadísticos.</p>
-            <div class="d-flex justify-content-center gap-3 mt-4">
-                <a href="{{ route('admin.recetas.index') }}" class="btn btn-dark btn-sm px-4">Recetas</a>
-                <a href="{{ route('admin.usuarios.index') }}" class="btn btn-outline-dark btn-sm px-4">Usuarios</a>
+        @php
+            $totalRecipes = \App\Models\Recipe::count();
+            $totalUsers = \App\Models\User::count();
+            $totalNutritionists = \App\Models\User::whereHas('role', fn($q) => $q->where('slug', 'nutritionist'))->count();
+            $totalPatients = \App\Models\User::whereHas('role', fn($q) => $q->where('slug', 'user'))->count();
+        @endphp
+
+        {{-- Metrics cards --}}
+        <div class="row g-4 mb-4">
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm bg-primary text-white p-4" style="background-color: var(--nc-primary) !important; position: relative; overflow: hidden;">
+                    <h2 class="fw-bold mb-1">{{ $totalRecipes }}</h2>
+                    <p class="mb-0 opacity-75">Recetas Publicadas</p>
+                    <i class="bi bi-journal-text position-absolute end-0 bottom-0 mb-2 me-3 fs-1 opacity-25"></i>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm bg-warning text-dark p-4" style="position: relative; overflow: hidden;">
+                    <h2 class="fw-bold mb-1">{{ $totalNutritionists }}</h2>
+                    <p class="mb-0 opacity-75">Nutricionistas</p>
+                    <i class="bi bi-person-badge position-absolute end-0 bottom-0 mb-2 me-3 fs-1 opacity-25"></i>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm bg-info text-white p-4" style="background-color: var(--nc-secondary) !important; position: relative; overflow: hidden;">
+                    <h2 class="fw-bold mb-1">{{ $totalPatients }}</h2>
+                    <p class="mb-0 opacity-75">Pacientes Activos</p>
+                    <i class="bi bi-people position-absolute end-0 bottom-0 mb-2 me-3 fs-1 opacity-25"></i>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm bg-dark text-white p-4" style="position: relative; overflow: hidden;">
+                    <h2 class="fw-bold mb-1">{{ $totalUsers }}</h2>
+                    <p class="mb-0 opacity-75">Usuarios Totales</p>
+                    <i class="bi bi-shield-lock position-absolute end-0 bottom-0 mb-2 me-3 fs-1 opacity-25"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-white border-0 py-3">
+                        <h6 class="fw-bold mb-0">Gestión de la Plataforma</h6>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted small">Desde aquí puedes administrar el contenido del sistema. Recuerda mantener las categorías organizadas y revisar que las recetas reportadas cumplan con las guías nutricionales.</p>
+                        <div class="d-flex gap-2">
+                            <a href="{{ route('admin.recetas.index') }}" class="btn btn-dark btn-sm">Ver recetas</a>
+                            <a href="{{ route('admin.usuarios.index') }}" class="btn btn-outline-dark btn-sm">Ver usuarios</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-white border-0 py-3">
+                        <h6 class="fw-bold mb-0">Acciones Rápidas</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a href="{{ route('admin.recetas.create') }}" class="btn btn-light btn-sm text-start border"><i class="bi bi-plus-circle me-2"></i>Nueva Receta</a>
+                            <a href="{{ route('admin.usuarios.create') }}" class="btn btn-light btn-sm text-start border"><i class="bi bi-person-plus me-2"></i>Nuevo Usuario</a>
+                            <a href="{{ route('admin.reportes') }}" class="btn btn-light btn-sm text-start border"><i class="bi bi-graph-up me-2"></i>Ver Reportes</a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     @endif

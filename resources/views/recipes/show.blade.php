@@ -81,11 +81,13 @@
                     </ul>
 
                     @auth
-                        <form method="POST" action="{{ route('recipes.addToShoppingList', $recipe) }}">
-                            @csrf
-                            <input type="hidden" name="my_ingredients" value="{{ $myIngredientsRaw ?? '' }}">
-                            <button type="submit" class="btn btn-dark w-100">Generar lista de compras</button>
-                        </form>
+                        @if (auth()->user()->isUser())
+                            <form method="POST" action="{{ route('recipes.addToShoppingList', $recipe) }}">
+                                @csrf
+                                <input type="hidden" name="my_ingredients" value="{{ $myIngredientsRaw ?? '' }}">
+                                <button type="submit" class="btn btn-dark w-100">Generar lista de compras</button>
+                            </form>
+                        @endif
                     @else
                         <a href="{{ route('login') }}" class="btn btn-dark w-100">Inicia sesión para generar lista</a>
                     @endauth

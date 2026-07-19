@@ -58,4 +58,27 @@ class NotificationController extends Controller
 
         return $count;
     }
+
+    public function recentNotifications(Request $request)
+    {
+        $unreadCount = $request->user()->receivedNotifications()->wherePivot('read', false)->count();
+        $items = $request->user()->receivedNotifications()
+            ->withPivot(['read', 'read_at'])
+            ->wherePivot('read', false)
+            ->latest('sent_at')
+            ->limit(5)
+            ->get()
+            ->map(fn($n) => [
+                'id' => $n->id,
+                'title' => $n->title,
+                'message' => \Illuminate\Support\Str::limit($n->message, 80),
+                'time' => $n->sent_at?->diffForHumans(),
+                'target' => $n->target,
+            ]);
+
+        return response()->json([
+            'unread' => $unreadCount,
+            'items' => $items,
+        ]);
+    }
 }

@@ -37,12 +37,26 @@ class RecommendationController extends Controller
 
         $patient = auth()->user()->patientsUsers()->findOrFail($data['patient_id']);
 
-        RecipeRecommendation::create([
+        $rec = RecipeRecommendation::create([
             'nutritionist_id' => auth()->id(),
             'patient_id' => $patient->id,
             'recipe_id' => $data['recipe_id'],
             'message' => $data['message'] ?? null,
             'sent_at' => now(),
+        ]);
+
+        // Send notification to the patient
+        $recipe = \App\Models\Recipe::find($data['recipe_id']);
+        $notification = \App\Models\Notification::create([
+            'sent_by' => auth()->id(),
+            'title' => 'Nueva recomendación',
+            'message' => 'Tu nutricionista ' . auth()->user()->name . ' te recomendó la receta: ' . ($recipe?->title ?? 'Receta'),
+            'target' => 'recommendations',
+            'sent_at' => now(),
+        ]);
+        $notification->notificationUsers()->create([
+            'user_id' => $patient->id,
+            'read' => false,
         ]);
 
         return redirect()->route('nutritionist.recommendations.index')->with('success', 'Recomendación enviada correctamente.');

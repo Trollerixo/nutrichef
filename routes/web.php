@@ -66,6 +66,10 @@ Route::middleware("auth")->group(function () {
         \App\Http\Controllers\NotificationController::class,
         "index",
     ])->name("notifications.index");
+    Route::get("/notificaciones/recientes", [
+        \App\Http\Controllers\NotificationController::class,
+        "recentNotifications",
+    ])->name("notifications.recent");
     Route::post("/notificaciones/leer-todas", [
         \App\Http\Controllers\NotificationController::class,
         "markAllAsRead",

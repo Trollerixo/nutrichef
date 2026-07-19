@@ -37,13 +37,13 @@
                         </div>
                         <div x-show="loading" class="text-center py-4 text-muted small">Cargando...</div>
                         <template x-for="item in items" :key="item.id">
-                            <div class="dropdown-item border-bottom px-3 py-2" :class="item.read ? '' : 'bg-light'">
+                            <div class="dropdown-item border-bottom px-3 py-2" :class="item.read ? '' : 'bg-light'" style="white-space: normal !important;">
                                 <div class="d-flex justify-content-between align-items-start gap-2">
-                                    <div class="min-w-0">
+                                    <a :href="item.target === 'messages' ? '{{ auth()->user() && auth()->user()->isNutritionist() ? route('nutritionist.consultations.index') : route('messages.index') }}' : (item.target === 'recommendations' ? '{{ route('recommendations.index') }}' : '{{ route('notifications.index') }}')" class="text-decoration-none text-dark min-w-0 flex-grow-1 d-block">
                                         <div class="small fw-semibold text-truncate" x-text="item.title"></div>
                                         <div class="text-muted" style="font-size: 0.7rem;" x-text="item.message"></div>
                                         <div class="text-muted" style="font-size: 0.65rem;" x-text="item.time"></div>
-                                    </div>
+                                    </a>
                                     <button x-show="!item.read" @click="markRead(item.id)" class="btn btn-link p-0 text-primary flex-shrink-0" title="Marcar leída">
                                         <i class="bi bi-check"></i>
                                     </button>
@@ -120,6 +120,18 @@
             open: false,
             unread: {{ $bellUnread }},
             items: JSON.parse(document.getElementById('bell-data').textContent),
+            init() {
+                setInterval(() => {
+                    fetch('{{ route('notifications.recent') }}', {
+                        headers: { 'Accept': 'application/json' }
+                    })
+                    .then(r => r.json())
+                    .then(data => {
+                        this.unread = data.unread;
+                        this.items = data.items;
+                    });
+                }, 15000);
+            },
             toggle() {
                 this.open = !this.open;
             },

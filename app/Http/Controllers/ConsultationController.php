@@ -71,6 +71,8 @@ class ConsultationController extends Controller
 
         $consultation->load(['nutritionist', 'messages.sender']);
 
+        \Illuminate\Support\Facades\Cache::put("user-active-chat:" . auth()->id(), $consultation->id, now()->addSeconds(45));
+
         return view('consultations.show', compact('consultation'));
     }
 
@@ -79,6 +81,8 @@ class ConsultationController extends Controller
         abort_if($consultation->patient_id !== auth()->id(), 403);
 
         $nutritionist = $consultation->nutritionist;
+
+        \Illuminate\Support\Facades\Cache::put("user-active-chat:" . auth()->id(), $consultation->id, now()->addSeconds(45));
 
         return response()->json([
             'online' => $nutritionist?->isOnline() ?? false,

@@ -43,6 +43,23 @@ class MessageController extends Controller
             'read' => false,
         ]);
 
+        // Send notification to nutritionist if not active in this chat
+        $recipientId = $consultation->nutritionist_id;
+        $isRecipientActive = \Illuminate\Support\Facades\Cache::get("user-active-chat:{$recipientId}") === $consultation->id;
+        if (!$isRecipientActive) {
+            $notification = \App\Models\Notification::create([
+                'sent_by' => auth()->id(),
+                'title' => 'Nuevo mensaje de chat',
+                'message' => auth()->user()->name . ': ' . \Illuminate\Support\Str::limit($message->body, 100),
+                'target' => 'messages',
+                'sent_at' => now(),
+            ]);
+            $notification->notificationUsers()->create([
+                'user_id' => $recipientId,
+                'read' => false,
+            ]);
+        }
+
         if ($request->wantsJson()) {
             return response()->json([
                 'success' => true,
