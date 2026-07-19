@@ -270,7 +270,7 @@
                         <div class="d-grid gap-2">
                             <a href="{{ route('admin.recetas.create') }}" class="btn btn-light btn-sm text-start border"><i class="bi bi-plus-circle me-2"></i>Nueva Receta</a>
                             <a href="{{ route('admin.usuarios.create') }}" class="btn btn-light btn-sm text-start border"><i class="bi bi-person-plus me-2"></i>Nuevo Usuario</a>
-                            <a href="{{ route('admin.reportes') }}" class="btn btn-light btn-sm text-start border"><i class="bi bi-graph-up me-2"></i>Ver Reportes</a>
+                            <a href="{{ route('admin.reportes.index') }}" class="btn btn-light btn-sm text-start border"><i class="bi bi-graph-up me-2"></i>Ver Reportes</a>
                         </div>
                     </div>
                 </div>
