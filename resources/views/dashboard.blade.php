@@ -220,14 +220,14 @@
                 <div class="card border-0 shadow-sm bg-primary text-white p-4" style="background-color: var(--nc-primary) !important; position: relative; overflow: hidden;">
                     <h2 class="fw-bold mb-1">{{ $totalRecipes }}</h2>
                     <p class="mb-0 opacity-75">Recetas Publicadas</p>
-                    <i class="bi bi-journal-text position-absolute end-0 bottom-0 mb-2 me-3 fs-1 opacity-25"></i>
+                    <img src="{{ asset('images/icons/receta.svg') }}" alt="" class="position-absolute end-0 bottom-0 mb-2 me-3 opacity-25" style="width: 4rem; height: 4rem; filter: brightness(0) invert(1);">
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="card border-0 shadow-sm bg-warning text-dark p-4" style="position: relative; overflow: hidden;">
                     <h2 class="fw-bold mb-1">{{ $totalNutritionists }}</h2>
                     <p class="mb-0 opacity-75">Nutricionistas</p>
-                    <i class="bi bi-person-badge position-absolute end-0 bottom-0 mb-2 me-3 fs-1 opacity-25"></i>
+                    <img src="{{ asset('images/icons/Nutricionistas.svg') }}" alt="" class="position-absolute end-0 bottom-0 mb-2 me-3 opacity-25" style="width: 4rem; height: 4rem; filter: brightness(0);">
                 </div>
             </div>
             <div class="col-md-3">
