@@ -446,7 +446,7 @@ body {
 }
 
 .chat-input {
-    padding: 0.75rem 1rem;
+    padding: 0.75rem 70px 0.75rem 1rem;
     background: #f0f0f0;
     flex-shrink: 0;
 }

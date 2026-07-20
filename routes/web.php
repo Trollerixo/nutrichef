@@ -230,6 +230,10 @@ Route::middleware("auth")->group(function () {
                 NutritionistConsultationController::class,
                 "reply",
             ])->name("consultations.reply");
+            Route::post("consultas/{consultation}/cerrar", [
+                NutritionistConsultationController::class,
+                "close",
+            ])->name("consultations.close");
             Route::get("planes", [
                 NutritionistPlanController::class,
                 "index",

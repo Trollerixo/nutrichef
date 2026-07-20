@@ -84,9 +84,19 @@ class ConsultationController extends Controller
 
         \Illuminate\Support\Facades\Cache::put("user-active-chat:" . auth()->id(), $consultation->id, now()->addSeconds(45));
 
+        $messages = $consultation->messages()->with('sender')->get()->map(fn($m) => [
+            'id' => $m->id,
+            'body' => $m->body,
+            'sender_id' => $m->sender_id,
+            'sent_at' => $m->sent_at?->format('H:i'),
+            'is_mine' => $m->sender_id === auth()->id(),
+        ]);
+
         return response()->json([
             'online' => $nutritionist?->isOnline() ?? false,
             'last_seen' => $nutritionist?->lastSeen() ?? 'N/A',
+            'status' => $consultation->status,
+            'messages' => $messages,
         ]);
     }
 }

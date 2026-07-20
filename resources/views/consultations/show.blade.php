@@ -4,20 +4,37 @@
         $chatNutritionistName = $chatNutritionist?->name ?? 'Nutricionista';
         $chatIsOnline = $chatNutritionist?->isOnline() ?? false;
         $chatLastSeen = $chatNutritionist?->lastSeen() ?? '';
+        $initialMessages = $consultation->messages->map(fn($m) => [
+            'id' => $m->id,
+            'body' => $m->body,
+            'sender_id' => $m->sender_id,
+            'sent_at' => $m->sent_at?->format('H:i'),
+            'is_mine' => $m->sender_id === auth()->id(),
+        ])->values();
     @endphp
 
     <script>
-        window.chat = (consultationId, online, lastSeen) => ({
+        window.chat = (consultationId, online, lastSeen, status, initialMessages) => ({
             consultationId,
             messageBody: '',
             online,
             lastSeen,
             statusText: '',
+            consultationStatus: status,
+            messages: initialMessages || [],
 
             init() {
-                this.statusText = this.online ? 'En l\u00ednea' : this.lastSeen || 'Desconectado';
+                this.updateStatusText();
                 this.$nextTick(() => this.scrollToBottom());
                 this.startPolling();
+            },
+
+            updateStatusText() {
+                if (this.consultationStatus === 'closed') {
+                    this.statusText = 'Consulta finalizada';
+                } else {
+                    this.statusText = this.online ? 'En l\u00ednea' : (this.lastSeen || 'Desconectado');
+                }
             },
 
             startPolling() {
@@ -27,11 +44,22 @@
                         .then(data => {
                             this.online = data.online;
                             this.lastSeen = data.last_seen;
-                            this.statusText = this.online
-                                ? 'En l\u00ednea'
-                                : this.lastSeen || 'Desconectado';
+                            if (data.status) this.consultationStatus = data.status;
+                            this.updateStatusText();
+
+                            if (data.messages && Array.isArray(data.messages)) {
+                                const prevLength = this.messages.length;
+                                const lastId = prevLength > 0 ? this.messages[prevLength - 1].id : null;
+                                const newLastId = data.messages.length > 0 ? data.messages[data.messages.length - 1].id : null;
+
+                                this.messages = data.messages;
+
+                                if (data.messages.length > prevLength || lastId !== newLastId) {
+                                    this.$nextTick(() => this.scrollToBottom());
+                                }
+                            }
                         });
-                }, 30000);
+                }, 3000);
             },
 
             scrollToBottom() {
@@ -41,7 +69,7 @@
 
             async sendMessage() {
                 const body = this.messageBody.trim();
-                if (!body) return;
+                if (!body || this.consultationStatus === 'closed') return;
 
                 const token = document.querySelector('[name=csrf-token]')?.content;
 
@@ -61,33 +89,16 @@
 
                     const data = await res.json();
 
-                    if (data.success) {
+                    if (data.success && data.message) {
                         this.messageBody = '';
-                        this.appendMessage(data.message);
+                        if (!this.messages.some(m => m.id === data.message.id)) {
+                            this.messages.push(data.message);
+                        }
+                        this.$nextTick(() => this.scrollToBottom());
                     }
                 } catch (e) {
                     console.error('Error al enviar mensaje', e);
                 }
-            },
-
-            appendMessage(msg) {
-                const container = this.$refs.messages;
-                const div = document.createElement('div');
-                div.className = 'chat-message chat-message--mine';
-                div.innerHTML = `
-                    <div class="chat-bubble">
-                        <p class="mb-1">${this.escapeHtml(msg.body)}</p>
-                        <span class="chat-time">${msg.sent_at}</span>
-                    </div>
-                `;
-                container.appendChild(div);
-                this.scrollToBottom();
-            },
-
-            escapeHtml(text) {
-                const d = document.createElement('div');
-                d.textContent = text;
-                return d.innerHTML;
             },
         });
     </script>
@@ -96,7 +107,9 @@
          x-data="chat(
              {{ $consultation->id }},
              {{ $chatIsOnline ? 'true' : 'false' }},
-             @js($chatLastSeen)
+             @js($chatLastSeen),
+             @js($consultation->status),
+             @js($initialMessages)
          )">
 
         {{-- Header --}}
@@ -108,23 +121,29 @@
                 <h6 class="fw-bold mb-0 text-truncate">{{ $chatNutritionistName }}</h6>
                 <small class="text-white-50" x-text="statusText">Cargando...</small>
             </div>
+            <template x-if="consultationStatus === 'closed'">
+                <span class="badge bg-secondary">Finalizada</span>
+            </template>
         </div>
 
         {{-- Messages --}}
         <div class="chat-messages" x-ref="messages">
-            @foreach ($consultation->messages as $message)
-                <div class="chat-message {{ $message->sender_id === auth()->id() ? 'chat-message--mine' : 'chat-message--theirs' }}">
+            <template x-for="message in messages" :key="message.id">
+                <div class="chat-message" :class="message.is_mine ? 'chat-message--mine' : 'chat-message--theirs'">
                     <div class="chat-bubble">
-                        <p class="mb-1">{{ $message->body }}</p>
-                        <span class="chat-time">{{ $message->sent_at->format('H:i') }}</span>
+                        <p class="mb-1" x-text="message.body"></p>
+                        <span class="chat-time" x-text="message.sent_at"></span>
                     </div>
                 </div>
-            @endforeach
+            </template>
         </div>
 
         {{-- Input --}}
         <div class="chat-input">
-            <form x-ref="form" @submit.prevent="sendMessage">
+            <div x-show="consultationStatus === 'closed'" class="text-center text-muted py-2 small">
+                <i class="bi bi-lock me-1"></i> Esta consulta ha sido finalizada por el nutricionista.
+            </div>
+            <form x-show="consultationStatus !== 'closed'" x-ref="form" @submit.prevent="sendMessage">
                 <div class="d-flex gap-2">
                     <input type="text" name="body" x-model="messageBody" class="form-control" placeholder="Escribe un mensaje..." required autocomplete="off">
                     <button type="submit" class="btn btn-dark" :disabled="!messageBody.trim()">
