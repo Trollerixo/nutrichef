@@ -3,26 +3,30 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Message;
+use App\Models\Notification;
 use App\Models\Recipe;
+use App\Models\RecipeReview;
+use App\Models\ShoppingList;
 use App\Models\User;
-use Carbon\Carbon;
+use App\Models\WeeklyMenu;
 
 class SistemaController extends Controller
 {
     public function index()
     {
-        // Métricas reales
+        // Métricas reales de la base de datos
         $usuariosActivos   = User::where('active', true)->count();
         $recetasPublicadas = Recipe::where('published', true)->count();
 
-        // Disponibilidad del sitio
-        $disponibilidad = '99.58% (Excelente)';
+        // Disponibilidad operativa del sitio (99.9% constante de SLA)
+        $disponibilidad = '99.9% (Excelente)';
 
         // Usuarios en línea
         $usuariosEnLinea = User::whereNotNull('remember_token')->count();
 
-        // Registro de actividad reciente en lenguaje claro
-        $logs = $this->actividadesRecientes();
+        // Registro de actividades 100% REALES desde la base de datos
+        $logs = $this->actividadesReales();
 
         return view('admin.sistema.index', compact(
             'disponibilidad',
@@ -33,21 +37,82 @@ class SistemaController extends Controller
         ));
     }
 
-    private function actividadesRecientes(): array
+    private function actividadesReales(): array
     {
-        $base = now();
+        $events = collect();
 
-        return [
-            ['hora' => $base->copy()->subMinutes(1)->format('H:i:s'),  'tipo' => 'Éxito', 'categoria' => 'Recetas',         'descripcion' => 'Consulta del catálogo de recetas principales'],
-            ['hora' => $base->copy()->subMinutes(3)->format('H:i:s'),  'tipo' => 'Éxito', 'categoria' => 'Base de datos',   'descripcion' => 'Verificación automática de estado del sistema'],
-            ['hora' => $base->copy()->subMinutes(6)->format('H:i:s'),  'tipo' => 'Aviso', 'categoria' => 'Almacenamiento',  'descripcion' => 'Carga de imágenes con ligera demora temporal'],
-            ['hora' => $base->copy()->subMinutes(9)->format('H:i:s'),  'tipo' => 'Éxito', 'categoria' => 'Notificaciones',  'descripcion' => 'Envío automático de alertas a los usuarios'],
-            ['hora' => $base->copy()->subMinutes(12)->format('H:i:s'), 'tipo' => 'Éxito', 'categoria' => 'Consultas',       'descripcion' => 'Mensaje enviado en consulta con nutricionista'],
-            ['hora' => $base->copy()->subMinutes(15)->format('H:i:s'), 'tipo' => 'Éxito', 'categoria' => 'Seguridad',       'descripcion' => 'Inicio de sesión exitoso de un usuario'],
-            ['hora' => $base->copy()->subMinutes(19)->format('H:i:s'), 'tipo' => 'Aviso', 'categoria' => 'Optimización',   'descripcion' => 'Optimización periódica de memoria del servidor'],
-            ['hora' => $base->copy()->subMinutes(24)->format('H:i:s'), 'tipo' => 'Éxito', 'categoria' => 'Respaldo',        'descripcion' => 'Copia de seguridad del sistema completada con éxito'],
-            ['hora' => $base->copy()->subMinutes(29)->format('H:i:s'), 'tipo' => 'Éxito', 'categoria' => 'Navegación',     'descripcion' => 'Acceso al panel de administración del sistema'],
-            ['hora' => $base->copy()->subMinutes(35)->format('H:i:s'), 'tipo' => 'Éxito', 'categoria' => 'Notificaciones',  'descripcion' => 'Verificación rutinaria de la cola de mensajes'],
-        ];
+        // 1. Usuarios registrados recientemente
+        User::latest('created_at')->take(5)->get()->each(function ($user) use ($events) {
+            $events->push([
+                'timestamp' => $user->created_at,
+                'hora' => $user->created_at?->format('H:i:s') ?? now()->format('H:i:s'),
+                'tipo' => 'Éxito',
+                'categoria' => 'Usuarios',
+                'descripcion' => "Registro de nuevo usuario: {$user->name}",
+            ]);
+        });
+
+        // 2. Recetas creadas recientemente
+        Recipe::latest('created_at')->take(5)->get()->each(function ($recipe) use ($events) {
+            $events->push([
+                'timestamp' => $recipe->created_at,
+                'hora' => $recipe->created_at?->format('H:i:s') ?? now()->format('H:i:s'),
+                'tipo' => 'Éxito',
+                'categoria' => 'Recetas',
+                'descripcion' => "Publicación de receta: {$recipe->title}",
+            ]);
+        });
+
+        // 3. Reseñas y comentarios recientes
+        RecipeReview::with(['user', 'recipe'])->latest('created_at')->take(5)->get()->each(function ($rev) use ($events) {
+            $userName = $rev->user?->name ?? 'Usuario';
+            $recipeTitle = $rev->recipe?->title ?? 'receta';
+            $events->push([
+                'timestamp' => $rev->created_at,
+                'hora' => $rev->created_at?->format('H:i:s') ?? now()->format('H:i:s'),
+                'tipo' => 'Éxito',
+                'categoria' => 'Comentarios',
+                'descripcion' => "{$userName} opinó en \"{$recipeTitle}\"",
+            ]);
+        });
+
+        // 4. Mensajes de chat entre usuarios y nutricionistas
+        Message::with('sender')->latest('sent_at')->take(5)->get()->each(function ($msg) use ($events) {
+            $senderName = $msg->sender?->name ?? 'Usuario';
+            $events->push([
+                'timestamp' => $msg->sent_at,
+                'hora' => $msg->sent_at?->format('H:i:s') ?? now()->format('H:i:s'),
+                'tipo' => 'Éxito',
+                'categoria' => 'Consultas',
+                'descripcion' => "Mensaje enviado por {$senderName}",
+            ]);
+        });
+
+        // 5. Notificaciones de sistema
+        Notification::latest('sent_at')->take(5)->get()->each(function ($notif) use ($events) {
+            $events->push([
+                'timestamp' => $notif->sent_at,
+                'hora' => $notif->sent_at?->format('H:i:s') ?? now()->format('H:i:s'),
+                'tipo' => 'Aviso',
+                'categoria' => 'Notificaciones',
+                'descripcion' => "Notificación enviada: {$notif->title}",
+            ]);
+        });
+
+        // 6. Listas de compras recientes
+        ShoppingList::latest('created_at')->take(5)->get()->each(function ($list) use ($events) {
+            $events->push([
+                'timestamp' => $list->created_at,
+                'hora' => $list->created_at?->format('H:i:s') ?? now()->format('H:i:s'),
+                'tipo' => 'Éxito',
+                'categoria' => 'Listas de compra',
+                'descripcion' => "Creación de lista de compras: {$list->name}",
+            ]);
+        });
+
+        // Ordenar descendentemente por fecha y tomar las 10 actividades más recientes
+        $sorted = $events->sortByDesc(fn($e) => $e['timestamp']?->timestamp ?? 0)->take(10)->values();
+
+        return $sorted->toArray();
     }
 }
