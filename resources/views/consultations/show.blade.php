@@ -71,6 +71,8 @@
                 const body = this.messageBody.trim();
                 if (!body || this.consultationStatus === 'closed') return;
 
+                this.messageBody = '';
+
                 const token = document.querySelector('[name=csrf-token]')?.content;
 
                 try {
@@ -90,14 +92,16 @@
                     const data = await res.json();
 
                     if (data.success && data.message) {
-                        this.messageBody = '';
                         if (!this.messages.some(m => m.id === data.message.id)) {
                             this.messages.push(data.message);
                         }
                         this.$nextTick(() => this.scrollToBottom());
+                    } else {
+                        this.messageBody = body;
                     }
                 } catch (e) {
                     console.error('Error al enviar mensaje', e);
+                    this.messageBody = body;
                 }
             },
         });
