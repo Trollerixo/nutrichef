@@ -13,7 +13,9 @@
             </a>
         </li>
         <li class="nav-item">
-            <a href="{{ route('admin.recetas.index') }}" class="nav-link {{ request()->routeIs('admin.recetas.*') ? 'active' : '' }}"><i class="bi bi-journal-text me-2"></i>Recetas</a>
+            <a href="{{ route('admin.recetas.index') }}" class="nav-link {{ request()->routeIs('admin.recetas.*') ? 'active' : '' }} d-flex align-items-center">
+                <img src="{{ asset('images/icons/receta.svg') }}" alt="" class="nc-icon-sm me-2 nc-sidebar-icon">Recetas
+            </a>
         </li>
         <li class="nav-item">
             <a href="{{ route('admin.categorias.index') }}" class="nav-link {{ request()->routeIs('admin.categorias.*') ? 'active' : '' }}"><i class="bi bi-tag me-2"></i>Categorías</a>
@@ -23,8 +25,8 @@
         </li>
         <li class="nav-item">
             <a href="{{ route('admin.nutricionistas.index') }}"
-               class="nav-link {{ request()->routeIs('admin.nutricionistas.*') ? 'active' : '' }}">
-                <i class="bi bi-person-badge me-2"></i>Nutricionistas
+               class="nav-link {{ request()->routeIs('admin.nutricionistas.*') ? 'active' : '' }} d-flex align-items-center">
+                <img src="{{ asset('images/icons/Nutricionistas.svg') }}" alt="" class="nc-icon-sm me-2 nc-sidebar-icon">Nutricionistas
             </a>
         </li>
         <li class="nav-item">
