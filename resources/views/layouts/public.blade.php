@@ -96,7 +96,11 @@
 
     <footer class="py-4 bg-white border-top mt-5">
         <div class="container text-center text-muted small">
-            &copy; {{ date('Y') }} NutriChef. Todos los derechos reservados.
+            <span>&copy; {{ date('Y') }} NutriChef. Todos los derechos reservados.</span>
+            <span class="mx-2">&bull;</span>
+            <a href="{{ route('support') }}" class="text-decoration-none text-muted fw-semibold">
+                <i class="bi bi-headset me-1"></i>Ayuda y Soporte
+            </a>
         </div>
     </footer>
 

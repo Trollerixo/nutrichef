@@ -119,6 +119,12 @@
                 <i class="bi bi-gear me-2"></i>Mi perfil
             </a>
         </li>
+        <li class="nav-item">
+            <a href="{{ route('support') }}"
+               class="nav-link {{ request()->routeIs('support') ? 'active' : '' }}">
+                <i class="bi bi-headset me-2"></i>Ayuda y Soporte
+            </a>
+        </li>
     </ul>
 @endif
 @endauth
