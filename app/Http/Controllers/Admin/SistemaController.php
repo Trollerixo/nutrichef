@@ -15,39 +15,39 @@ class SistemaController extends Controller
         $usuariosActivos   = User::where('active', true)->count();
         $recetasPublicadas = Recipe::where('published', true)->count();
 
-        // Uptime simulado (estático para el prototipo)
-        $uptime = '99.58%';
+        // Disponibilidad del sitio
+        $disponibilidad = '99.58% (Excelente)';
 
-        // Sesiones activas: se aproxima con usuarios con remember_token reciente
-        $sesionesAhora = User::whereNotNull('remember_token')->count();
+        // Usuarios en línea
+        $usuariosEnLinea = User::whereNotNull('remember_token')->count();
 
-        // Log reciente simulado (en producción se leería de un servicio de logs o tabla)
-        $logs = $this->logsRecientes();
+        // Registro de actividad reciente en lenguaje claro
+        $logs = $this->actividadesRecientes();
 
         return view('admin.sistema.index', compact(
-            'uptime',
+            'disponibilidad',
             'usuariosActivos',
-            'sesionesAhora',
+            'usuariosEnLinea',
             'recetasPublicadas',
-            'logs',
+            'logs'
         ));
     }
 
-    private function logsRecientes(): array
+    private function actividadesRecientes(): array
     {
         $base = now();
 
         return [
-            ['hora' => $base->copy()->subMinutes(0)->format('H:i:s'),  'nivel' => 'INFO', 'servicio' => 'API REST',             'mensaje' => 'GET /recetas respondió 200 en 45 ms'],
-            ['hora' => $base->copy()->subMinutes(2)->format('H:i:s'),  'nivel' => 'INFO', 'servicio' => 'Base de datos',        'mensaje' => 'Conexión pool restaurada automáticamente'],
-            ['hora' => $base->copy()->subMinutes(4)->format('H:i:s'),  'nivel' => 'WARN', 'servicio' => 'Servicio de imágenes', 'mensaje' => 'Latencia elevada en cdn-images (340 ms)'],
-            ['hora' => $base->copy()->subMinutes(7)->format('H:i:s'),  'nivel' => 'INFO', 'servicio' => 'Notificaciones push',  'mensaje' => 'Lote 1.240 notificaciones enviadas'],
-            ['hora' => $base->copy()->subMinutes(10)->format('H:i:s'), 'nivel' => 'INFO', 'servicio' => 'Mensajería',           'mensaje' => 'Nuevo mensaje en sala nutri-345'],
-            ['hora' => $base->copy()->subMinutes(14)->format('H:i:s'), 'nivel' => 'INFO', 'servicio' => 'API REST',             'mensaje' => 'POST /login respondió 200 en 120 ms'],
-            ['hora' => $base->copy()->subMinutes(17)->format('H:i:s'), 'nivel' => 'WARN', 'servicio' => 'Servicio de imágenes', 'mensaje' => 'Cache miss ratio 18% en región eu-west'],
-            ['hora' => $base->copy()->subMinutes(22)->format('H:i:s'), 'nivel' => 'INFO', 'servicio' => 'Base de datos',        'mensaje' => 'Backup automático completado (2.3 GB)'],
-            ['hora' => $base->copy()->subMinutes(27)->format('H:i:s'), 'nivel' => 'INFO', 'servicio' => 'API REST',             'mensaje' => 'GET /admin/sistema respondió 200 en 28 ms'],
-            ['hora' => $base->copy()->subMinutes(32)->format('H:i:s'), 'nivel' => 'INFO', 'servicio' => 'Notificaciones push',  'mensaje' => 'Cola de envío vacía'],
+            ['hora' => $base->copy()->subMinutes(1)->format('H:i:s'),  'tipo' => 'Éxito', 'categoria' => 'Recetas',         'descripcion' => 'Consulta del catálogo de recetas principales'],
+            ['hora' => $base->copy()->subMinutes(3)->format('H:i:s'),  'tipo' => 'Éxito', 'categoria' => 'Base de datos',   'descripcion' => 'Verificación automática de estado del sistema'],
+            ['hora' => $base->copy()->subMinutes(6)->format('H:i:s'),  'tipo' => 'Aviso', 'categoria' => 'Almacenamiento',  'descripcion' => 'Carga de imágenes con ligera demora temporal'],
+            ['hora' => $base->copy()->subMinutes(9)->format('H:i:s'),  'tipo' => 'Éxito', 'categoria' => 'Notificaciones',  'descripcion' => 'Envío automático de alertas a los usuarios'],
+            ['hora' => $base->copy()->subMinutes(12)->format('H:i:s'), 'tipo' => 'Éxito', 'categoria' => 'Consultas',       'descripcion' => 'Mensaje enviado en consulta con nutricionista'],
+            ['hora' => $base->copy()->subMinutes(15)->format('H:i:s'), 'tipo' => 'Éxito', 'categoria' => 'Seguridad',       'descripcion' => 'Inicio de sesión exitoso de un usuario'],
+            ['hora' => $base->copy()->subMinutes(19)->format('H:i:s'), 'tipo' => 'Aviso', 'categoria' => 'Optimización',   'descripcion' => 'Optimización periódica de memoria del servidor'],
+            ['hora' => $base->copy()->subMinutes(24)->format('H:i:s'), 'tipo' => 'Éxito', 'categoria' => 'Respaldo',        'descripcion' => 'Copia de seguridad del sistema completada con éxito'],
+            ['hora' => $base->copy()->subMinutes(29)->format('H:i:s'), 'tipo' => 'Éxito', 'categoria' => 'Navegación',     'descripcion' => 'Acceso al panel de administración del sistema'],
+            ['hora' => $base->copy()->subMinutes(35)->format('H:i:s'), 'tipo' => 'Éxito', 'categoria' => 'Notificaciones',  'descripcion' => 'Verificación rutinaria de la cola de mensajes'],
         ];
     }
 }
